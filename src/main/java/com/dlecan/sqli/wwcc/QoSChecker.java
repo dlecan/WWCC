@@ -46,7 +46,7 @@ public class QoSChecker {
 		LOGGER.info("Temps de fonctionnement théorique : {} secondes",
 				DUREE_FONCTIONNEMENT_THEORIQUE);
 
-		SortedSetMultimap<Chocolat, Interval> intervalsChocolats = extractIntervals(qualityFile);
+		Multimap<Chocolat, Interval> intervalsChocolats = extractIntervals(qualityFile);
 
 		intervalsChocolats = mergeIntervals(intervalsChocolats);
 
@@ -57,8 +57,8 @@ public class QoSChecker {
 		return "";
 	}
 
-	private SortedSetMultimap<Chocolat, Interval> mergeIntervals(
-			SortedSetMultimap<Chocolat, Interval> intervalsChocolats) {
+	private Multimap<Chocolat, Interval> mergeIntervals(
+			Multimap<Chocolat, Interval> intervalsChocolats) {
 		StopWatch stopWatch = new Slf4JStopWatch("mergeIntervals");
 		
 		TreeMultimap<Chocolat, Interval> result = TreeMultimap.create(Ordering
@@ -141,7 +141,7 @@ public class QoSChecker {
 	}
 
 	private void tempsPendantLequelManqueAuMoinsUnTypeChocolat(
-			SortedSetMultimap<Chocolat, Interval> intervalsChocolats) {
+			Multimap<Chocolat, Interval> intervalsChocolats) {
 		StopWatch stopWatch = new Slf4JStopWatch(
 				"tempsPendantLequelManqueAuMoinsUnTypeChocolat");
 
