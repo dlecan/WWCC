@@ -186,8 +186,10 @@ public class QoSChecker {
 										line);
 					}
 					try {
-						DateTime debut = DTF.parseDateTime(s[0]);
-						DateTime fin = DTF.parseDateTime(s[1]);
+						String strDebut = s[0];
+						DateTime debut = DTF.parseDateTime(strDebut);
+						String strFin = s[1];
+						DateTime fin = DTF.parseDateTime(strFin);
 						Interval interval = new Interval(debut, fin);
 						String type = s[2];
 
