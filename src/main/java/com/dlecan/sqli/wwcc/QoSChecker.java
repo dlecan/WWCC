@@ -254,6 +254,18 @@ public class QoSChecker {
 	private Interval extraireIntervalEnTenantCompteHeureDeVisite(
 			DateTime debut, DateTime fin) {
 
+		
+//		DateTime debutMatin = new DateTime(debut);
+//		debutMatin.withHourOfDay(10);
+//
+//		DateTime finMatin = new DateTime(debut);
+//		debutMatin.withHourOfDay(12);
+
+		if (fin.getDayOfMonth() != debut.getDayOfMonth()) {
+			LOGGER.warn("Interval sur 2 jours différents : {} ", new Interval(debut, fin));
+		}
+		
+		return new Interval(debut, fin);
 	}
 
 }
