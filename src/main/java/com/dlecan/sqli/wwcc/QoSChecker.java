@@ -61,7 +61,7 @@ public class QoSChecker {
 	private Multimap<Chocolat, Interval> mergeIntervals(
 			Multimap<Chocolat, Interval> intervalsChocolats) {
 		StopWatch stopWatch = new Slf4JStopWatch("mergeIntervals");
-		
+
 		Multimap<Chocolat, Interval> result = ArrayListMultimap.create();
 
 		for (Chocolat chocolat : Chocolat.values()) {
@@ -187,14 +187,19 @@ public class QoSChecker {
 					}
 					try {
 						String strDebut = s[0];
-						DateTime debut = DTF.parseDateTime(strDebut);
 						String strFin = s[1];
-						DateTime fin = DTF.parseDateTime(strFin);
-						Interval interval = new Interval(debut, fin);
 						String type = s[2];
 
-						Chocolat chocolat = Chocolat.fromType(type);
-						result.put(chocolat, interval);
+						DateTime debut = DTF.parseDateTime(strDebut);
+						DateTime fin = DTF.parseDateTime(strFin);
+
+						Interval interval = extraireIntervalEnTenantCompteHeureDeVisite(
+								debut, fin);
+
+						if (interval != null) {
+							Chocolat chocolat = Chocolat.fromType(type);
+							result.put(chocolat, interval);
+						}
 
 					} catch (IllegalArgumentException e) {
 						LOGGER.warn("Skip line [{}] because : {}",
@@ -244,6 +249,11 @@ public class QoSChecker {
 				// ss
 				m.charAt(17), m.charAt(18), };
 		return strChar0;
+	}
+
+	private Interval extraireIntervalEnTenantCompteHeureDeVisite(
+			DateTime debut, DateTime fin) {
+
 	}
 
 }
