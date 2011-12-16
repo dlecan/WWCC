@@ -163,7 +163,7 @@ public class QoSChecker {
 				// car certaines n'ont pas de sens dans la TZ Paris
 				// Exemple : 27/03/2011 02:24:25, car changement d'heure d'été
 				// A 2h, on saute directement à 3h
-				if (line.indexOf("/11/") != -1) {
+				if (line.indexOf("/11/2011") != -1) {
 
 					String[] s = line.split(";");
 
