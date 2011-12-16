@@ -34,6 +34,12 @@ public class QoSChecker {
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(QoSChecker.class);
 
+	/**
+	 * Durée de fonctionnement théorique (novembre) : (5j (S1) + 3 * 6j (S2, S3,
+	 * S4) + 3 (S5)) * 4h * 60min * 60s.
+	 */
+	private static final long DUREE_FONCTIONNEMENT_THEORIQUE = (5 + 3 * 6 + 3) * 4 * 60 * 60;
+
 	public String extractQoS(File qualityFile) {
 		StopWatch stopWatch = new Slf4JStopWatch("extractQoS");
 
