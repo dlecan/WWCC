@@ -20,6 +20,7 @@ import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
@@ -61,8 +62,7 @@ public class QoSChecker {
 			Multimap<Chocolat, Interval> intervalsChocolats) {
 		StopWatch stopWatch = new Slf4JStopWatch("mergeIntervals");
 		
-		TreeMultimap<Chocolat, Interval> result = TreeMultimap.create(Ordering
-				.natural(), new OlderFirstIntervalComparator());
+		Multimap<Chocolat, Interval> result = ArrayListMultimap.create();
 
 		for (Chocolat chocolat : Chocolat.values()) {
 
