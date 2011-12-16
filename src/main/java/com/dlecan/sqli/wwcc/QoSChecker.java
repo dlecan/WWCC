@@ -111,7 +111,7 @@ public class QoSChecker {
 
 		stopWatch.stop();
 
-		return intervalsChocolats;
+		return result;
 	}
 
 	private void tempsPendantLequelManqueChaqueTypeChocolat(
