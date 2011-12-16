@@ -83,6 +83,7 @@ public class QoSChecker {
 				if (previousInterval.contains(currentInterval)) {
 					// L'interval 'current' ne sert à rien, il est inclus
 					// dans un autre. On ne le garde pas
+					result.put(chocolat, previousInterval);
 				} else if (previousInterval.abuts(currentInterval)
 						|| previousInterval.overlaps(currentInterval)) {
 					// Les 2 intervals se touchent ou se recouvrent.
@@ -90,6 +91,7 @@ public class QoSChecker {
 					previousInterval = new Interval(
 							previousInterval.getStart(), currentInterval
 									.getEnd());
+					result.put(chocolat, previousInterval);
 				} else {
 					// Cas du "gap"
 					// On garde l'interval le plus ancien et on saute au
