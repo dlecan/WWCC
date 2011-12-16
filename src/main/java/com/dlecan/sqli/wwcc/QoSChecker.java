@@ -43,6 +43,9 @@ public class QoSChecker {
 	public String extractQoS(File qualityFile) {
 		StopWatch stopWatch = new Slf4JStopWatch("extractQoS");
 
+		LOGGER.info("Temps de fonctionnement théorique : {} secondes",
+				DUREE_FONCTIONNEMENT_THEORIQUE);
+
 		SortedSetMultimap<Chocolat, Interval> intervalsChocolats = extractIntervals(qualityFile);
 
 		intervalsChocolats = mergeIntervals(intervalsChocolats);
