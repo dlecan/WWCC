@@ -60,6 +60,9 @@ public class QoSChecker {
 	private SortedSetMultimap<Chocolat, Interval> mergeIntervals(
 			SortedSetMultimap<Chocolat, Interval> intervalsChocolats) {
 		StopWatch stopWatch = new Slf4JStopWatch("mergeIntervals");
+		
+		TreeMultimap<Chocolat, Interval> result = TreeMultimap.create(Ordering
+				.natural(), new OlderFirstIntervalComparator());
 
 		for (Chocolat chocolat : Chocolat.values()) {
 
@@ -68,8 +71,6 @@ public class QoSChecker {
 			int nbIntervalsAvantFusion = intervals.size();
 
 			Iterator<Interval> iteratorIntervals = intervals.iterator();
-
-			List<Interval> newIntervals = Lists.newArrayList();
 
 			// On a forcément un interval par chocolat, inutile de tester
 			// si il y en a au moins un.
@@ -93,7 +94,7 @@ public class QoSChecker {
 					// Cas du "gap"
 					// On garde l'interval le plus ancien et on saute au
 					// suivant.
-					newIntervals.add(previousInterval);
+					result.put(chocolat, previousInterval);
 					previousInterval = currentInterval;
 				}
 
@@ -102,7 +103,7 @@ public class QoSChecker {
 			LOGGER.debug(
 					"Nb intervals pour le chocolat {} || Avant {} || Après {}",
 					new Object[] { chocolat, nbIntervalsAvantFusion,
-							newIntervals.size() });
+							result.get(chocolat).size() });
 
 		}
 
