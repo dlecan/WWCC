@@ -189,14 +189,6 @@ public class QoSChecker {
 						DateTime debut = DTF.parseDateTime(s[0]);
 						DateTime fin = DTF.parseDateTime(s[1]);
 						Interval interval = new Interval(debut, fin);
-						// Reformatage de la date
-						// Très risqué
-						// char[] strChar0 = reformatString(s[0]);
-						// hirondelle.date4j.DateTime debut = new
-						// hirondelle.date4j.DateTime(String.valueOf(strChar0));
-						// char[] strChar1 = reformatString(s[1]);
-						// hirondelle.date4j.DateTime fin = new
-						// hirondelle.date4j.DateTime(String.valueOf(strChar1));
 						String type = s[2];
 
 						Chocolat chocolat = Chocolat.fromType(type);
