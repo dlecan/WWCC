@@ -377,7 +377,8 @@ public class QoSChecker {
 		int jour = date.getDayOfMonth();
 
 		String cle = String.valueOf(annee) + String.valueOf(mois)
-				+ String.valueOf(jour);
+				+ String.valueOf(jour) + String.valueOf(debut)
+				+ String.valueOf(fin);
 
 		Interval cachedInterval = CACHE_INTERVAL.get(cle);
 
@@ -390,5 +391,4 @@ public class QoSChecker {
 
 		return cachedInterval;
 	}
-
 }
