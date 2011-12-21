@@ -376,7 +376,8 @@ public class QoSChecker {
 		int mois = date.getMonthOfYear();
 		int jour = date.getDayOfMonth();
 
-		long cle = annee * mois * jour;
+		String cle = String.valueOf(annee) + String.valueOf(mois)
+				+ String.valueOf(jour);
 
 		Interval cachedInterval = CACHE_INTERVAL.get(cle);
 
@@ -384,7 +385,7 @@ public class QoSChecker {
 			cachedInterval = new Interval(new DateTime(annee, mois, jour,
 					debut, 00, 00),
 					new DateTime(annee, mois, jour, fin, 00, 00));
-			// CACHE_INTERVAL.put(cle, cachedInterval);
+			CACHE_INTERVAL.put(cle, cachedInterval);
 		}
 
 		return cachedInterval;
