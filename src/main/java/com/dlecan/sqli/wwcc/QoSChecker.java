@@ -382,7 +382,7 @@ public class QoSChecker {
 			cachedInterval = new Interval(new DateTime(annee, mois, jour,
 					debut, 00, 00),
 					new DateTime(annee, mois, jour, fin, 00, 00));
-			CACHE_INTERVAL.put(cle, cachedInterval);
+//			CACHE_INTERVAL.put(cle, cachedInterval);
 		}
 
 		return cachedInterval;
