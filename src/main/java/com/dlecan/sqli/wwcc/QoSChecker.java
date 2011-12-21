@@ -263,23 +263,26 @@ public class QoSChecker {
 
 			DateTime finRelle;
 			if (intervalDeVisiteMatin.contains(fin)) {
+				
 				finRelle = fin;
+				result.add(new Interval(debutReel, finRelle));
 
 			} else if (intervalDeVisiteMidi.contains(fin)) {
+				
 				finRelle = intervalDeVisiteMatin.getEnd();
+				result.add(new Interval(debutReel, finRelle));
 
 			} else if (intervalDeVisiteApresMidi.contains(fin)) {
 
 				finRelle = intervalDeVisiteMatin.getEnd();
-
 				result.add(new Interval(debutReel, finRelle));
 
 				// Besoin d'un 2è interval
 				result.add(new Interval(intervalDeVisiteApresMidi.getStart(),
 						fin));
 			} else {
-				finRelle = intervalDeVisiteMatin.getEnd();
 
+				finRelle = intervalDeVisiteMatin.getEnd();
 				result.add(new Interval(debutReel, finRelle));
 
 				// Besoin d'un 2è interval
