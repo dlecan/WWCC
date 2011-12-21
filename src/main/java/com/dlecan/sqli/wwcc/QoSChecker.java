@@ -48,7 +48,7 @@ public class QoSChecker {
 
 		Multimap<Chocolat, Interval> intervalsChocolats = extractIntervals(qualityFile);
 
-		intervalsChocolats = mergeIntervals(intervalsChocolats);
+//		intervalsChocolats = mergeIntervals(intervalsChocolats);
 
 		tempsPendantLequelManqueChaqueTypeChocolat(intervalsChocolats);
 		tempsPendantLequelManqueAuMoinsUnTypeChocolat(intervalsChocolats);
