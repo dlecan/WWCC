@@ -192,12 +192,8 @@ public class QoSChecker {
 						DateTime debut = DTF.parseDateTime(strDebut);
 						DateTime fin = DTF.parseDateTime(strFin);
 
-						stopWatch
-								.start("extraireIntervalsEnTenantCompteHeureDeVisite");
 						Collection<Interval> intervals = extraireIntervalsEnTenantCompteHeureDeVisite(
 								debut, fin);
-						stopWatch
-								.stop("extraireIntervalsEnTenantCompteHeureDeVisite");
 
 						Chocolat chocolat = Chocolat.fromType(type);
 						result.putAll(chocolat, intervals);
