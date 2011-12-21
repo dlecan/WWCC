@@ -292,10 +292,14 @@ public class QoSChecker {
 
 			DateTime finRelle;
 			if (intervalDeVisiteMatin.contains(fin)) {
+			
 				finRelle = fin;
-
+				result.add(new Interval(debutReel, finRelle));
+			
 			} else if (intervalDeVisiteMidi.contains(fin)) {
+			
 				finRelle = intervalDeVisiteMatin.getEnd();
+				result.add(new Interval(debutReel, finRelle));
 
 			} else if (intervalDeVisiteApresMidi.contains(fin)) {
 
