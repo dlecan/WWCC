@@ -6,7 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.joda.time.DateTime;
@@ -33,6 +35,8 @@ public class QoSChecker {
 
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(QoSChecker.class);
+
+	private static final Map<Long, Interval> CACHE_INTERVAL = new HashMap<Long, Interval>();
 
 	/**
 	 * Durée de fonctionnement théorique (novembre) : (5j (S1) + 3 * 6j (S2, S3,
@@ -369,8 +373,19 @@ public class QoSChecker {
 		int annee = date.getYear();
 		int mois = date.getMonthOfYear();
 		int jour = date.getDayOfMonth();
-		return new Interval(new DateTime(annee, mois, jour, debut, 00, 00),
-				new DateTime(annee, mois, jour, fin, 00, 00));
+
+		long cle = annee * mois * jour;
+
+		Interval cachedInterval = CACHE_INTERVAL.get(cle);
+
+		if (cachedInterval == null) {
+			cachedInterval = new Interval(new DateTime(annee, mois, jour,
+					debut, 00, 00),
+					new DateTime(annee, mois, jour, fin, 00, 00));
+			CACHE_INTERVAL.put(cle, cachedInterval);
+		}
+
+		return cachedInterval;
 	}
 
 }
