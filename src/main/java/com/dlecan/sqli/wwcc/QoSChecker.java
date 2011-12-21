@@ -354,6 +354,22 @@ public class QoSChecker {
 			}
 			// Pas de else, les 2 dates sont sur la pause de midi :)
 			// L'interval est exclu
+		} else if (intervalDeVisiteApresMidi.contains(debut)) {
+			
+			DateTime debutReel = debut;
+
+			if (intervalDeVisiteApresMidi.contains(fin)) {
+
+				result.add(new Interval(debutReel, fin));
+
+			} else if (intervalDeVisiteApresMidi.isBefore(fin)) {
+
+				result.add(new Interval(debutReel, intervalDeVisiteApresMidi
+						.getEnd()));
+
+			}
+		} else {
+			// Rien
 		}
 
 		return result;
