@@ -48,7 +48,7 @@ public class QoSChecker {
 
 		Multimap<Chocolat, Interval> intervalsChocolats = extractIntervals(qualityFile);
 
-//		intervalsChocolats = mergeIntervals(intervalsChocolats);
+		// intervalsChocolats = mergeIntervals(intervalsChocolats);
 
 		tempsPendantLequelManqueChaqueTypeChocolat(intervalsChocolats);
 		tempsPendantLequelManqueAuMoinsUnTypeChocolat(intervalsChocolats);
@@ -121,6 +121,9 @@ public class QoSChecker {
 		for (Chocolat chocolat : Chocolat.values()) {
 
 			Collection<Interval> intervals = intervalsChocolats.get(chocolat);
+
+			LOGGER.debug("Nb intervals pour le chocolat {} : {}", new Object[] {
+					chocolat, intervals.size() });
 
 			long dureeTotale = 0;
 
@@ -263,12 +266,12 @@ public class QoSChecker {
 
 			DateTime finRelle;
 			if (intervalDeVisiteMatin.contains(fin)) {
-				
+
 				finRelle = fin;
 				result.add(new Interval(debutReel, finRelle));
 
 			} else if (intervalDeVisiteMidi.contains(fin)) {
-				
+
 				finRelle = intervalDeVisiteMatin.getEnd();
 				result.add(new Interval(debutReel, finRelle));
 
@@ -296,14 +299,14 @@ public class QoSChecker {
 			DateTime finRelle;
 			if (intervalDeVisiteMatin.isAfter(fin)) {
 				// Rien
-				
+
 			} else if (intervalDeVisiteMatin.contains(fin)) {
-			
+
 				finRelle = fin;
 				result.add(new Interval(debutReel, finRelle));
-			
+
 			} else if (intervalDeVisiteMidi.contains(fin)) {
-			
+
 				finRelle = intervalDeVisiteMatin.getEnd();
 				result.add(new Interval(debutReel, finRelle));
 
