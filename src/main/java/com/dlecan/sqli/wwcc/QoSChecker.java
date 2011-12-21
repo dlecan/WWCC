@@ -379,7 +379,7 @@ public class QoSChecker {
 		String cle = String.valueOf(annee) + String.valueOf(mois)
 				+ String.valueOf(jour) + String.valueOf(debut)
 				+ String.valueOf(fin);
-
+		
 		Interval cachedInterval = CACHE_INTERVAL.get(cle);
 
 		if (cachedInterval == null) {
