@@ -192,8 +192,12 @@ public class QoSChecker {
 						DateTime debut = DTF.parseDateTime(strDebut);
 						DateTime fin = DTF.parseDateTime(strFin);
 
+						stopWatch
+								.start("extraireIntervalsEnTenantCompteHeureDeVisite");
 						Collection<Interval> intervals = extraireIntervalsEnTenantCompteHeureDeVisite(
 								debut, fin);
+						stopWatch
+								.stop("extraireIntervalsEnTenantCompteHeureDeVisite");
 
 						Chocolat chocolat = Chocolat.fromType(type);
 						result.putAll(chocolat, intervals);
@@ -250,7 +254,6 @@ public class QoSChecker {
 
 	private Collection<Interval> extraireIntervalsEnTenantCompteHeureDeVisite(
 			DateTime debut, DateTime fin) {
-		StopWatch stopWatch = new Slf4JStopWatch("extraireIntervalsEnTenantCompteHeureDeVisite");
 
 		Interval intervalDeVisiteMatin = intervalDeVisiteMatin(debut);
 		Interval intervalDeVisiteMidi = intervalDeVisiteMidi(debut);
@@ -336,7 +339,6 @@ public class QoSChecker {
 			}
 		}
 
-		stopWatch.stop();
 		return result;
 	}
 
