@@ -6,9 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.joda.time.DateTime;
@@ -252,11 +250,112 @@ public class QoSChecker {
 
 	private Collection<Interval> extraireIntervalsEnTenantCompteHeureDeVisite(
 			DateTime debut, DateTime fin) {
-	
-		
-		
 
-		return Collections.singletonList(new Interval(debut, fin));
+		Interval intervalDeVisiteMatin = intervalDeVisiteMatin(debut);
+		Interval intervalDeVisiteMidi = intervalDeVisiteMidi(debut);
+		Interval intervalDeVisiteApresMidi = intervalDeVisiteApresMidi(debut);
+
+		Collection<Interval> result = Lists.newArrayList();
+
+		if (intervalDeVisiteMatin.contains(debut)) {
+
+			DateTime debutReel = debut;
+
+			DateTime finRelle;
+			if (intervalDeVisiteMatin.contains(fin)) {
+				finRelle = fin;
+
+			} else if (intervalDeVisiteMidi.contains(fin)) {
+				finRelle = intervalDeVisiteMatin.getEnd();
+
+			} else if (intervalDeVisiteApresMidi.contains(fin)) {
+
+				finRelle = intervalDeVisiteMatin.getEnd();
+
+				result.add(new Interval(debutReel, finRelle));
+
+				// Besoin d'un 2è interval
+				result.add(new Interval(intervalDeVisiteApresMidi.getStart(),
+						fin));
+			} else {
+				finRelle = intervalDeVisiteMatin.getEnd();
+
+				result.add(new Interval(debutReel, finRelle));
+
+				// Besoin d'un 2è interval
+				result.add(intervalDeVisiteApresMidi);
+			}
+
+		} else if (intervalDeVisiteMatin.isAfter(debut)) {
+
+			DateTime debutReel = intervalDeVisiteMatin.getStart();
+
+			DateTime finRelle;
+			if (intervalDeVisiteMatin.contains(fin)) {
+				finRelle = fin;
+
+			} else if (intervalDeVisiteMidi.contains(fin)) {
+				finRelle = intervalDeVisiteMatin.getEnd();
+
+			} else if (intervalDeVisiteApresMidi.contains(fin)) {
+
+				finRelle = intervalDeVisiteMatin.getEnd();
+
+				result.add(new Interval(debutReel, finRelle));
+
+				// Besoin d'un 2è interval
+				result.add(new Interval(intervalDeVisiteApresMidi.getStart(),
+						fin));
+			} else {
+				finRelle = intervalDeVisiteMatin.getEnd();
+
+				result.add(new Interval(debutReel, finRelle));
+
+				// Besoin d'un 2è interval
+				result.add(intervalDeVisiteApresMidi);
+			}
+
+		} else if (intervalDeVisiteMidi.contains(debut)) {
+			// Interval du matin avant la date de debut
+			// Visite du matin pas effectée par la panne
+
+			// On regarde ce que cela donne pour la visite de l'après-midi
+
+			DateTime debutReel = intervalDeVisiteApresMidi.getStart();
+
+			if (intervalDeVisiteApresMidi.contains(fin)) {
+
+				result.add(new Interval(debutReel, fin));
+
+			} else {
+
+				result.add(new Interval(debutReel, intervalDeVisiteApresMidi
+						.getEnd()));
+
+			}
+		}
+
+		return result;
+	}
+
+	private Interval intervalDeVisiteMatin(DateTime date) {
+		return intervalDeVisite(date, 10, 12);
+	}
+
+	private Interval intervalDeVisiteMidi(DateTime date) {
+		return intervalDeVisite(date, 12, 14);
+	}
+
+	private Interval intervalDeVisiteApresMidi(DateTime date) {
+		return intervalDeVisite(date, 14, 16);
+	}
+
+	private Interval intervalDeVisite(DateTime date, int debut, int fin) {
+		int annee = date.getYear();
+		int mois = date.getMonthOfYear();
+		int jour = date.getDayOfMonth();
+		return new Interval(new DateTime(annee, mois, jour, debut, 00, 00),
+				new DateTime(annee, mois, jour, fin, 00, 00));
 	}
 
 }
