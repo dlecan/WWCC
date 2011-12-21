@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -193,13 +194,11 @@ public class QoSChecker {
 						DateTime debut = DTF.parseDateTime(strDebut);
 						DateTime fin = DTF.parseDateTime(strFin);
 
-						Interval interval = extraireIntervalEnTenantCompteHeureDeVisite(
+						Collection<Interval> intervals = extraireIntervalsEnTenantCompteHeureDeVisite(
 								debut, fin);
 
-						if (interval != null) {
-							Chocolat chocolat = Chocolat.fromType(type);
-							result.put(chocolat, interval);
-						}
+						Chocolat chocolat = Chocolat.fromType(type);
+						result.putAll(chocolat, intervals);
 
 					} catch (IllegalArgumentException e) {
 						LOGGER.warn("Skip line [{}] because : {}",
@@ -251,10 +250,13 @@ public class QoSChecker {
 		return strChar0;
 	}
 
-	private Interval extraireIntervalEnTenantCompteHeureDeVisite(
+	private Collection<Interval> extraireIntervalsEnTenantCompteHeureDeVisite(
 			DateTime debut, DateTime fin) {
+	
+		
+		
 
-		return new Interval(debut, fin);
+		return Collections.singletonList(new Interval(debut, fin));
 	}
 
 }
