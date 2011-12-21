@@ -250,6 +250,7 @@ public class QoSChecker {
 
 	private Collection<Interval> extraireIntervalsEnTenantCompteHeureDeVisite(
 			DateTime debut, DateTime fin) {
+		StopWatch stopWatch = new Slf4JStopWatch("extraireIntervalsEnTenantCompteHeureDeVisite");
 
 		Interval intervalDeVisiteMatin = intervalDeVisiteMatin(debut);
 		Interval intervalDeVisiteMidi = intervalDeVisiteMidi(debut);
@@ -335,6 +336,7 @@ public class QoSChecker {
 			}
 		}
 
+		stopWatch.stop();
 		return result;
 	}
 
