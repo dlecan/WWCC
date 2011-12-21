@@ -327,12 +327,14 @@ public class QoSChecker {
 
 				result.add(new Interval(debutReel, fin));
 
-			} else {
+			} else if (intervalDeVisiteApresMidi.isBefore(fin)) {
 
 				result.add(new Interval(debutReel, intervalDeVisiteApresMidi
 						.getEnd()));
 
 			}
+			// Pas de else, les 2 dates sont sur la pause de midi :)
+			// L'interval est exclu
 		}
 
 		return result;
