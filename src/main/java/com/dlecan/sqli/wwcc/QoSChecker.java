@@ -151,6 +151,10 @@ public class QoSChecker {
 
 		LOGGER.info("Temps d'indisponibilite globale : {} secondes",
 				tempsAuMoinsUnChocolat);
+		
+		float qos = (float) (DUREE_FONCTIONNEMENT_THEORIQUE - tempsAuMoinsUnChocolat) / DUREE_FONCTIONNEMENT_THEORIQUE * 100;
+		
+		LOGGER.info("Qualité de Service novembre 2011 : {}%", qos);
 
 		stopWatch.stop();
 	}
