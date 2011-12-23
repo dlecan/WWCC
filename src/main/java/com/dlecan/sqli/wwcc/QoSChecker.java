@@ -151,9 +151,10 @@ public class QoSChecker {
 
 		LOGGER.info("Temps d'indisponibilite globale : {} secondes",
 				tempsAuMoinsUnChocolat);
-		
-		float qos = (float) (DUREE_FONCTIONNEMENT_THEORIQUE - tempsAuMoinsUnChocolat) / DUREE_FONCTIONNEMENT_THEORIQUE * 100;
-		
+
+		float qos = (float) (DUREE_FONCTIONNEMENT_THEORIQUE - tempsAuMoinsUnChocolat)
+				/ DUREE_FONCTIONNEMENT_THEORIQUE * 100;
+
 		LOGGER.info("Qualité de Service novembre 2011 : {}%", qos);
 
 		stopWatch.stop();
@@ -175,15 +176,18 @@ public class QoSChecker {
 				// car certaines n'ont pas de sens dans la TZ Paris
 				// Exemple : 27/03/2011 02:24:25, car changement d'heure d'�t�
 				// A 2h, on saute directement � 3h
-				if (line.indexOf("/11/2011") != -1) {
+				
+				// Si les 3è et 4è caractères sont '1', on est sur le mois de novembre
+				if (line.charAt(3) == '1' && line.charAt(4) == '1') {
+//				if (line.contains("/11/2011")) {
 
 					String[] s = line.split(";");
 
-					if (s.length != 3) {
-						LOGGER.warn(
-								"Skip line [{}] because it isn't well-formatted",
-								line);
-					}
+//					if (s.length != 3) {
+//						LOGGER.warn(
+//								"Skip line [{}] because it isn't well-formatted",
+//								line);
+//					}
 					try {
 						String strDebut = s[0];
 						String strFin = s[1];
