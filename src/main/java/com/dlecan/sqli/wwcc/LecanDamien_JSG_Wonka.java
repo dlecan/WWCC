@@ -19,6 +19,8 @@ public class LecanDamien_JSG_Wonka {
 
             System.out.println("Mois : Novembre 2011");
             System.out.println("Client : The Willy Wonka Candy Company");
+            System.out.println();
+            
             System.out.println(String.format(
                     "Temps de fonctionnement th\u00E9orique : %s secondes",
                     resultats[0]));
