@@ -43,8 +43,9 @@ public class LecanDamien_JSG_Wonka {
                     resultats[5]);
             System.out
                     .println("Qualit\u00E9 de Service novembre 2011 : " + qos);
-
+            System.out.println();
         }
+        
         System.out.println("time = " + (System.currentTimeMillis() - debut)
                 + " millis");
     }
