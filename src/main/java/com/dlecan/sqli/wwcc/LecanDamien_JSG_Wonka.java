@@ -38,7 +38,7 @@ public class LecanDamien_JSG_Wonka {
                     resultats[4]));
             System.out.println();
 
-            NumberFormat percentInstance = new DecimalFormat("00.##%"); 
+            NumberFormat percentInstance = new DecimalFormat("00.0#%"); 
             String qos = percentInstance.format(
                     resultats[5]);
             System.out
