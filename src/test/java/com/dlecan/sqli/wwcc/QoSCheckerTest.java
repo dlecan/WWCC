@@ -2,6 +2,7 @@ package com.dlecan.sqli.wwcc;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -30,11 +31,10 @@ public class QoSCheckerTest {
 
         runTest("test1", resultats);
     }
-    
+
     @Test
     public void test_test2() throws Exception {
-        Object[] resultats = new Object[] { 374400, 19800, 18000, 18000, 12600,
-                ((float) 96.63461) };
+        Object[] resultats = new Object[] { 374400, 19800, 18000, 18000, 12600 };
 
         runTest("test2", resultats);
     }
@@ -50,6 +50,10 @@ public class QoSCheckerTest {
         stopWatch.stop();
 
         if (attendus != null) {
+
+            Object[] resultatsModifies = Arrays.copyOf(resultats,
+                    attendus.length);
+
             assertEquals(attendus, resultats);
         }
     }
