@@ -162,7 +162,7 @@ public class QoSChecker {
         double qos = (double) (DUREE_FONCTIONNEMENT_THEORIQUE - tempsAuMoinsUnChocolat)
                 / DUREE_FONCTIONNEMENT_THEORIQUE;
 
-        LOGGER.debug("Qualité de Service novembre 2011 : {}%", qos);
+        LOGGER.debug("Qualité de Service novembre 2011 : {}", qos);
         resultats[5] = qos;
 
         stopWatch.stop();
