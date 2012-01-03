@@ -10,25 +10,26 @@ import org.perf4j.slf4j.Slf4JStopWatch;
 
 public class QoSCheckerTest {
 
-	private QoSChecker qoSChecker;
+    private QoSChecker qoSChecker;
 
-	@Before
-	public void setUp() throws Exception {
-		qoSChecker = new QoSChecker();
-	}
+    @Before
+    public void setUp() throws Exception {
+        qoSChecker = new QoSChecker();
+    }
 
-	@Test
-	public void testExtractQoS() throws Exception {
-		runTest();
-	}
+    @Test
+    public void testExtractQoS() throws Exception {
+        runTest("wonka_data_2011_v2.dat");
+    }
 
-    private void runTest() throws URISyntaxException {
-        StopWatch stopWatch = new Slf4JStopWatch("testExtractQoS");
+    private void runTest(String nomFichierTest) throws URISyntaxException {
+        StopWatch stopWatch = new Slf4JStopWatch("testExtractQoS_"
+                + nomFichierTest);
 
-		qoSChecker.extractQoS(new File(getClass().getResource(
-				"/wonka_data_2011_v2.dat").toURI()));
+        qoSChecker.extractQoS(new File(getClass().getResource(
+                "/" + nomFichierTest).toURI()));
 
-		stopWatch.stop();
+        stopWatch.stop();
     }
 
 }
