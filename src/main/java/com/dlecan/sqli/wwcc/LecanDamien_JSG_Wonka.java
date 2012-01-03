@@ -34,7 +34,7 @@ public class LecanDamien_JSG_Wonka {
                     resultats[4]));
             System.out.println();
             System.out.println(String
-                    .format("Qualit\u00E9 de Service novembre 2011 : %s",
+                    .format("Qualit\u00E9 de Service novembre 2011 : %f2\u0025",
                             resultats[5]));
 
         }
