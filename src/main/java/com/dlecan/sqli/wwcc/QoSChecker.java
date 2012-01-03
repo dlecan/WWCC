@@ -49,8 +49,8 @@ public class QoSChecker {
 	private static final int FIN_VISITE_APRES_MIDI = 16 * NB_SECONDES_HEURE;
 
 	/**
-	 * Dur�e de fonctionnement th�orique (novembre), en secondes : (5j (S1) + 3
-	 * * 6j (S2, S3, S4) + 3 (S5)) * 4h * 60min * 60s.
+	 * Dur�e de fonctionnement th�orique (novembre), en secondes : (5j (S1) +
+	 * 3 * 6j (S2, S3, S4) + 3 (S5)) * 4h * 60min * 60s.
 	 */
 	private static final int DUREE_FONCTIONNEMENT_THEORIQUE = (5 + 3 * 6 + 3) * 4 * 60 * 60;
 
@@ -58,7 +58,7 @@ public class QoSChecker {
 
 	private byte[] visites;
 
-	public String extractQoS(File qualityFile) {
+	public String[] extractQoS(File qualityFile) {
 		StopWatch stopWatch = new Slf4JStopWatch("extractQoS");
 
 		LOGGER.info("Temps de fonctionnement th�orique : {} secondes",
@@ -73,7 +73,7 @@ public class QoSChecker {
 		mesureQoS();
 
 		stopWatch.stop();
-		return "";
+		return new String[] { "" };
 	}
 
 	private void construireHeuresVisite() {
@@ -174,20 +174,22 @@ public class QoSChecker {
 				// On filtre les lignes qui ne nous concerne pas
 				// On ne prend pas le risque de parser les autres dates
 				// car certaines n'ont pas de sens dans la TZ Paris
-				// Exemple : 27/03/2011 02:24:25, car changement d'heure d'�t�
+				// Exemple : 27/03/2011 02:24:25, car changement d'heure
+				// d'�t�
 				// A 2h, on saute directement � 3h
-				
-				// Si les 3è et 4è caractères sont '1', on est sur le mois de novembre
+
+				// Si les 3è et 4è caractères sont '1', on est sur le mois de
+				// novembre
 				if (line.charAt(3) == '1' && line.charAt(4) == '1') {
-//				if (line.contains("/11/2011")) {
+					// if (line.contains("/11/2011")) {
 
 					String[] s = line.split(";");
 
-//					if (s.length != 3) {
-//						LOGGER.warn(
-//								"Skip line [{}] because it isn't well-formatted",
-//								line);
-//					}
+					// if (s.length != 3) {
+					// LOGGER.warn(
+					// "Skip line [{}] because it isn't well-formatted",
+					// line);
+					// }
 					try {
 						String strDebut = s[0];
 						String strFin = s[1];
