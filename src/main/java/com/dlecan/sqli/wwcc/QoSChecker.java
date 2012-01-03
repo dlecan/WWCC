@@ -55,8 +55,6 @@ public class QoSChecker {
 
     private byte[] donnees;
 
-    private byte[] visites;
-
     public Object[] extractQoS(File qualityFile) {
         StopWatch stopWatch = new Slf4JStopWatch("extractQoS");
 
@@ -64,10 +62,9 @@ public class QoSChecker {
                 DUREE_FONCTIONNEMENT_THEORIQUE);
 
         donnees = new byte[NB_SECONDES_MOIS_11];
-        visites = new byte[NB_SECONDES_MOIS_11];
 
-        extraireIntervals(qualityFile);
         construireHeuresVisite();
+        extraireIntervals(qualityFile);
 
         Object[] resultats = mesureQoS();
         resultats[0] = DUREE_FONCTIONNEMENT_THEORIQUE;
@@ -93,11 +90,11 @@ public class QoSChecker {
         int offset = numJournee * NB_SECONDES_JOURNEE;
 
         // On indique les heures d'ouverture du matin pour cette journée
-        Arrays.fill(visites, offset + DEBUT_VISITE_MATIN, offset
+        Arrays.fill(donnees, offset + DEBUT_VISITE_MATIN, offset
                 + FIN_VISITE_MATIN, ETAT_OUVERT_AUX_VISITES);
 
         // Même chose pour l'après-midi
-        Arrays.fill(visites, offset + DEBUT_VISITE_APRES_MIDI, offset
+        Arrays.fill(donnees, offset + DEBUT_VISITE_APRES_MIDI, offset
                 + FIN_VISITE_APRES_MIDI, ETAT_OUVERT_AUX_VISITES);
     }
 
