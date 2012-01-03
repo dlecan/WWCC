@@ -69,10 +69,11 @@ public class QoSChecker {
         extraireIntervals(qualityFile);
         construireHeuresVisite();
 
-        mesureQoS();
+        Object[] resultats = mesureQoS();
+        resultats[0] = DUREE_FONCTIONNEMENT_THEORIQUE;
 
         stopWatch.stop();
-        return new Object[] { DUREE_FONCTIONNEMENT_THEORIQUE };
+        return resultats;
     }
 
     private void construireHeuresVisite() {
