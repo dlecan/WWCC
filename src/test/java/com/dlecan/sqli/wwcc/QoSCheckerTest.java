@@ -17,11 +17,11 @@ public class QoSCheckerTest {
         qoSChecker = new QoSChecker();
     }
 
-//    @Test
+    // @Test
     public void test_wonka_data_2011_v2() throws Exception {
-        runTest("wonka_data_2011_v2.dat");
+        runTest("wonka_data_2011_v2");
     }
-    
+
     @Test
     public void test_test1() throws Exception {
         runTest("test1");
@@ -32,7 +32,7 @@ public class QoSCheckerTest {
                 + nomFichierTest);
 
         qoSChecker.extractQoS(new File(getClass().getResource(
-                "/" + nomFichierTest).toURI()));
+                "/" + nomFichierTest + ".dat").toURI()));
 
         stopWatch.stop();
     }
