@@ -26,16 +26,16 @@ public class LecanDamien_JSG_Wonka {
                     resultats[1]));
             System.out.println(String.format(
                     "Temps de rupture de chocolat noir : %s secondes",
-                    resultats[1]));
+                    resultats[2]));
             System.out.println(String.format(
                     "Temps de rupture de chocolat au lait : %s secondes",
-                    resultats[1]));
+                    resultats[3]));
             System.out.println(String.format(
                     "Temps d'indisponibilité globale : %s secondes",
-                    resultats[1]));
+                    resultats[4]));
             System.out.println();
             System.out.println(String.format(
-                    "Qualité de Service novembre 2011 : %s%", resultats[1]));
+                    "Qualité de Service novembre 2011 : %s%", resultats[5]));
 
         }
         System.out.println("time = " + (System.currentTimeMillis() - debut)
