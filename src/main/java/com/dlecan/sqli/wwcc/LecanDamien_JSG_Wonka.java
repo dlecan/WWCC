@@ -10,7 +10,7 @@ public class LecanDamien_JSG_Wonka {
     public static void main(String[] args) {
         long debut = System.currentTimeMillis();
 
-        if (args != null && args.length > 1) {
+        if (args != null && args.length > 0) {
 
             QoSChecker qoSChecker = new QoSChecker();
             Object[] resultats = qoSChecker.extractQoS(new File(args[0]));
