@@ -49,6 +49,7 @@ public class QoSCheckerTest {
         Object[] resultats = new Object[] { 374400, 19800, 18000, 18000, 30600 };
 
         runTest("test3", resultats);
+    }
     
 
     private void runTest(String nomFichierTest, Object[] attendus)
