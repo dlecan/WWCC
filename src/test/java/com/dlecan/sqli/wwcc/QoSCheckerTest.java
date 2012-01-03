@@ -28,16 +28,19 @@ public class QoSCheckerTest {
         runTest("test1");
     }
 
-    private void runTest(String nomFichierTest, Object[] attendus) throws URISyntaxException {
+    private void runTest(String nomFichierTest, Object[] attendus)
+            throws URISyntaxException {
         StopWatch stopWatch = new Slf4JStopWatch("testExtractQoS_"
                 + nomFichierTest);
 
-        Object[] resultats = qoSChecker.extractQoS(new File(getClass().getResource(
-                "/" + nomFichierTest + ".dat").toURI()));
+        Object[] resultats = qoSChecker.extractQoS(new File(getClass()
+                .getResource("/" + nomFichierTest + ".dat").toURI()));
 
         stopWatch.stop();
-        
-        assertEquals(attendus, resultats);
+
+        if (attendus != null) {
+            assertEquals(attendus, resultats);
+        }
     }
 
 }
