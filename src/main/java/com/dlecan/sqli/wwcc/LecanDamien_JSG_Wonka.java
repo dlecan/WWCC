@@ -36,7 +36,9 @@ public class LecanDamien_JSG_Wonka {
                     resultats[4]));
             System.out.println();
 
-            String qos = NumberFormat.getPercentInstance(Locale.FRANCE).format(
+            NumberFormat percentInstance = NumberFormat.getPercentInstance(Locale.FRANCE);
+            percentInstance.setMaximumFractionDigits(2);
+            String qos = percentInstance.format(
                     resultats[5]);
             System.out
                     .println("Qualit\u00E9 de Service novembre 2011 : " + qos);
