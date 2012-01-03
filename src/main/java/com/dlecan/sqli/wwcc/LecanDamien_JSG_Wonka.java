@@ -1,6 +1,8 @@
 package com.dlecan.sqli.wwcc;
 
 import java.io.File;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class LecanDamien_JSG_Wonka {
 
@@ -33,9 +35,11 @@ public class LecanDamien_JSG_Wonka {
                     "Temps d'indisponibilit\u00E9 globale : %s secondes",
                     resultats[4]));
             System.out.println();
-            System.out.println(String
-                    .format("Qualit\u00E9 de Service novembre 2011 : %f2,2",
-                            resultats[5]));
+
+            String qos = NumberFormat.getPercentInstance(Locale.FRANCE).format(
+                    resultats[5]);
+            System.out
+                    .println("Qualit\u00E9 de Service novembre 2011 : " + qos);
 
         }
         System.out.println("time = " + (System.currentTimeMillis() - debut)
