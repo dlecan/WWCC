@@ -1,6 +1,5 @@
 package com.dlecan.sqli.wwcc;
 
-
 import java.io.File;
 
 public class LecanDamien_JSG_Wonka {
@@ -19,7 +18,7 @@ public class LecanDamien_JSG_Wonka {
             System.out.println("Mois : Novembre 2011");
             System.out.println("Client : The Willy Wonka Candy Company");
             System.out.println(String.format(
-                    "Temps de fonctionnement théorique : %s secondes",
+                    "Temps de fonctionnement th\u00E9orique : %s secondes",
                     resultats[0]));
             System.out.println(String.format(
                     "Temps de rupture de chocolat blanc : %s secondes",
@@ -31,11 +30,12 @@ public class LecanDamien_JSG_Wonka {
                     "Temps de rupture de chocolat au lait : %s secondes",
                     resultats[3]));
             System.out.println(String.format(
-                    "Temps d'indisponibilité globale : %s secondes",
+                    "Temps d'indisponibilit\u00E9 globale : %s secondes",
                     resultats[4]));
             System.out.println();
-            System.out.println(String.format(
-                    "Qualité de Service novembre 2011 : %s%", resultats[5]));
+            System.out.println(String
+                    .format("Qualit\u00E9 de Service novembre 2011 : %s%",
+                            resultats[5]));
 
         }
         System.out.println("time = " + (System.currentTimeMillis() - debut)
