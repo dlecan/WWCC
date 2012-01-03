@@ -2,7 +2,9 @@ package com.dlecan.sqli.wwcc;
 
 public class QoSCheckerException extends RuntimeException {
 
-	public QoSCheckerException() {
+    private static final long serialVersionUID = 1L;
+
+    public QoSCheckerException() {
 		super();
 	}
 
