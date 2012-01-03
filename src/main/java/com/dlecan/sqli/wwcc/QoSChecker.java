@@ -152,7 +152,7 @@ public class QoSChecker {
         resultats[2] = tempsChaqueChocolat[ETAT_CHOCOLAT_NOIR];
         resultats[3] = tempsChaqueChocolat[ETAT_CHOCOLAT_LAIT];
 
-        LOGGER.debug("Temps d'indisponibilite globale : {} secondes",
+        LOGGER.debug("Temps d'indisponibilit\u00E9 globale : {} secondes",
                 tempsAuMoinsUnChocolat);
         resultats[4] = tempsAuMoinsUnChocolat;
 
