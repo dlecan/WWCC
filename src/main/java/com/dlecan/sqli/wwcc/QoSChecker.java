@@ -254,7 +254,7 @@ public class QoSChecker {
         return Chocolat.fromType(typeChocolat).getEtat();
     }
 
-    boolean contient(int ensemble, int aVerifier) {
+    private boolean contient(int ensemble, int aVerifier) {
         return (ensemble & aVerifier) == aVerifier;
     }
 }
