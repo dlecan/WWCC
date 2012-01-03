@@ -17,15 +17,15 @@ public class QoSChecker {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(QoSChecker.class);
 
-    private static final byte ETAT_DISPONIBLE = 0; // 0
+    private static final byte ETAT_DISPONIBLE = 1 << 0; // 1
 
-    private static final byte ETAT_OUVERT_AUX_VISITES = 1 << 0; // 1
+    private static final byte ETAT_OUVERT_AUX_VISITES = 1 << 1; // 2
 
-    public static final byte ETAT_CHOCOLAT_BLANC = 1 << 1; // 2
+    public static final byte ETAT_CHOCOLAT_BLANC = 1 << 2; // 4
 
-    public static final byte ETAT_CHOCOLAT_NOIR = 1 << 2; // 4
+    public static final byte ETAT_CHOCOLAT_NOIR = 1 << 3; // 8
 
-    public static final byte ETAT_CHOCOLAT_LAIT = 1 << 3; // 8
+    public static final byte ETAT_CHOCOLAT_LAIT = 1 << 4; // 16
 
     private static final byte[] ETATS_CHOCOLAT = { ETAT_CHOCOLAT_BLANC,
             ETAT_CHOCOLAT_NOIR, ETAT_CHOCOLAT_LAIT };
