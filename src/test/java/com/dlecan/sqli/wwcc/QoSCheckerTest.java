@@ -34,7 +34,7 @@ public class QoSCheckerTest {
 
     @Test
     public void test_test2() throws Exception {
-        Object[] resultats = new Object[] { 374400, 19800, 18000, 18000, 12600 };
+        Object[] resultats = new Object[] { 374400, 19800, 18000, 18000, 30600 };
 
         runTest("test2", resultats);
     }
@@ -51,6 +51,7 @@ public class QoSCheckerTest {
 
         if (attendus != null) {
 
+            // Supression de la qualité de service pour certains tests.
             Object[] resultatsModifies = Arrays.copyOf(resultats,
                     attendus.length);
 
