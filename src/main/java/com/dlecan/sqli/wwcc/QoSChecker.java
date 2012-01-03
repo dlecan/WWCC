@@ -181,10 +181,10 @@ public class QoSChecker {
                 // On ne prend pas le risque de parser les autres dates
                 // car certaines n'ont pas de sens dans la TZ Paris
                 // Exemple : 27/03/2011 02:24:25, car changement d'heure
-                // d'�t�
-                // A 2h, on saute directement � 3h
+                // d'ete
+                // A 2h, on saute directement a 3h
 
-                // Si les 3è et 4è caractères sont '1', on est sur le mois de
+                // Si les 3e et 4e caracteres sont '1', on est sur le mois de
                 // novembre
                 if (line.charAt(3) == '1' && line.charAt(4) == '1') {
                     // if (line.contains("/11/2011")) {
