@@ -1,8 +1,8 @@
 package com.dlecan.sqli.wwcc;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Locale;
 
 public class LecanDamien_JSG_Wonka {
 
@@ -38,8 +38,7 @@ public class LecanDamien_JSG_Wonka {
                     resultats[4]));
             System.out.println();
 
-            NumberFormat percentInstance = NumberFormat.getPercentInstance(Locale.FRANCE);
-            percentInstance.setMaximumFractionDigits(2);
+            NumberFormat percentInstance = new DecimalFormat("00.##%"); 
             String qos = percentInstance.format(
                     resultats[5]);
             System.out
