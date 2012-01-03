@@ -159,7 +159,7 @@ public class QoSChecker {
                 tempsAuMoinsUnChocolat);
         resultats[4] = tempsAuMoinsUnChocolat;
 
-        float qos = (float) (DUREE_FONCTIONNEMENT_THEORIQUE - tempsAuMoinsUnChocolat)
+        double qos = (double) (DUREE_FONCTIONNEMENT_THEORIQUE - tempsAuMoinsUnChocolat)
                 / DUREE_FONCTIONNEMENT_THEORIQUE * 100;
 
         LOGGER.debug("Qualité de Service novembre 2011 : {}%", qos);
