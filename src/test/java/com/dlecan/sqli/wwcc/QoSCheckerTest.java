@@ -17,9 +17,14 @@ public class QoSCheckerTest {
         qoSChecker = new QoSChecker();
     }
 
-    @Test
-    public void testExtractQoS() throws Exception {
+//    @Test
+    public void test_wonka_data_2011_v2() throws Exception {
         runTest("wonka_data_2011_v2.dat");
+    }
+    
+    @Test
+    public void test_test1() throws Exception {
+        runTest("test1");
     }
 
     private void runTest(String nomFichierTest) throws URISyntaxException {
