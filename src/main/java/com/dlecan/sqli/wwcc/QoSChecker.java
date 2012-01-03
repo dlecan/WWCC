@@ -163,7 +163,7 @@ public class QoSChecker {
                 / DUREE_FONCTIONNEMENT_THEORIQUE * 100;
 
         LOGGER.debug("Qualité de Service novembre 2011 : {}%", qos);
-        resultats[4] = qos;
+        resultats[5] = qos;
 
         stopWatch.stop();
         return resultats;
