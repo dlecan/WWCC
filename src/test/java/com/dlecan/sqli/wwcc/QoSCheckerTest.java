@@ -3,6 +3,7 @@ package com.dlecan.sqli.wwcc;
 import java.io.File;
 import java.net.URISyntaxException;
 
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.perf4j.StopWatch;
@@ -27,14 +28,16 @@ public class QoSCheckerTest {
         runTest("test1");
     }
 
-    private void runTest(String nomFichierTest) throws URISyntaxException {
+    private void runTest(String nomFichierTest, Object[] attendus) throws URISyntaxException {
         StopWatch stopWatch = new Slf4JStopWatch("testExtractQoS_"
                 + nomFichierTest);
 
-        qoSChecker.extractQoS(new File(getClass().getResource(
+        Object[] resultats = qoSChecker.extractQoS(new File(getClass().getResource(
                 "/" + nomFichierTest + ".dat").toURI()));
 
         stopWatch.stop();
+        
+        assertEquals(attendus, resultats);
     }
 
 }
