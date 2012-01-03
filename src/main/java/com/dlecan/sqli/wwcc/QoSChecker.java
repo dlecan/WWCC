@@ -102,7 +102,7 @@ public class QoSChecker {
         StopWatch stopWatch = new Slf4JStopWatch(
                 "tempsPendantLequelManqueChaqueTypeChocolat");
 
-        int[] tempsChaqueChocolat = new int[10];
+        int[] tempsChaqueChocolat = new int[ETAT_CHOCOLAT_LAIT + 1];
 
         int i;
         for (i = 0; i < ETATS_CHOCOLAT.length; i++) {
