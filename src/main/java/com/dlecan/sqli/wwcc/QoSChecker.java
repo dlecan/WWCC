@@ -60,7 +60,7 @@ public class QoSChecker {
     public Object[] extractQoS(File qualityFile) {
         StopWatch stopWatch = new Slf4JStopWatch("extractQoS");
 
-        LOGGER.info("Temps de fonctionnement th�orique : {} secondes",
+        LOGGER.debug("Temps de fonctionnement th�orique : {} secondes",
                 DUREE_FONCTIONNEMENT_THEORIQUE);
 
         donnees = new byte[NB_SECONDES_MOIS_11];
@@ -72,7 +72,7 @@ public class QoSChecker {
         mesureQoS();
 
         stopWatch.stop();
-        return new String[] { "" };
+        return new Object[] { DUREE_FONCTIONNEMENT_THEORIQUE };
     }
 
     private void construireHeuresVisite() {
