@@ -100,7 +100,7 @@ public class QoSChecker {
                 + FIN_VISITE_APRES_MIDI, ETAT_OUVERT_AUX_VISITES);
     }
 
-    private void mesureQoS() {
+    private Object[] mesureQoS() {
         StopWatch stopWatch = new Slf4JStopWatch(
                 "tempsPendantLequelManqueChaqueTypeChocolat");
 
@@ -142,21 +142,30 @@ public class QoSChecker {
 
         }
 
-        for (i = 0; i < ETATS_CHOCOLAT.length; i++) {
-            LOGGER.info("Temps de rupture de chocolat {} : {} secondes",
-                    new Object[] { Chocolat.fromEtat(ETATS_CHOCOLAT[i]),
-                            tempsChaqueChocolat[ETATS_CHOCOLAT[i]] });
+        if (LOGGER.isDebugEnabled()) {
+            for (i = 0; i < ETATS_CHOCOLAT.length; i++) {
+                LOGGER.debug("Temps de rupture de chocolat {} : {} secondes",
+                        new Object[] { Chocolat.fromEtat(ETATS_CHOCOLAT[i]),
+                                tempsChaqueChocolat[ETATS_CHOCOLAT[i]] });
+            }
         }
+        Object[] resultats = new Object[6];
+        resultats[1] = tempsChaqueChocolat[2];
+        resultats[2] = tempsChaqueChocolat[4];
+        resultats[3] = tempsChaqueChocolat[8];
 
-        LOGGER.info("Temps d'indisponibilite globale : {} secondes",
+        LOGGER.debug("Temps d'indisponibilite globale : {} secondes",
                 tempsAuMoinsUnChocolat);
+        resultats[4] = tempsAuMoinsUnChocolat;
 
         float qos = (float) (DUREE_FONCTIONNEMENT_THEORIQUE - tempsAuMoinsUnChocolat)
                 / DUREE_FONCTIONNEMENT_THEORIQUE * 100;
 
-        LOGGER.info("Qualité de Service novembre 2011 : {}%", qos);
+        LOGGER.debug("Qualité de Service novembre 2011 : {}%", qos);
+        resultats[4] = qos;
 
         stopWatch.stop();
+        return resultats;
     }
 
     private void extraireIntervals(File qualityFile) {
