@@ -48,7 +48,7 @@ public class QoSChecker {
     private static final int FIN_VISITE_APRES_MIDI = 16 * NB_SECONDES_HEURE;
 
     /**
-     * Dur�e de fonctionnement th�orique (novembre), en secondes : (5j (S1) +
+     * Duree de fonctionnement theorique (novembre), en secondes : (5j (S1) +
      * 3 * 6j (S2, S3, S4) + 3 (S5)) * 4h * 60min * 60s.
      */
     private static final int DUREE_FONCTIONNEMENT_THEORIQUE = (5 + 3 * 6 + 3) * 4 * 60 * 60;
@@ -89,11 +89,11 @@ public class QoSChecker {
 
         int offset = numJournee * NB_SECONDES_JOURNEE;
 
-        // On indique les heures d'ouverture du matin pour cette journée
+        // On indique les heures d'ouverture du matin pour cette journee
         Arrays.fill(donnees, offset + DEBUT_VISITE_MATIN, offset
                 + FIN_VISITE_MATIN, ETAT_OUVERT_AUX_VISITES);
 
-        // Même chose pour l'après-midi
+        // Meme chose pour l'apres-midi
         Arrays.fill(donnees, offset + DEBUT_VISITE_APRES_MIDI, offset
                 + FIN_VISITE_APRES_MIDI, ETAT_OUVERT_AUX_VISITES);
     }
@@ -120,7 +120,7 @@ public class QoSChecker {
 
                 boolean auMoinsUnChocolatIndisponible = false;
 
-                // Extraction des différents chocolats
+                // Extraction des differents chocolats
                 for (int j = 0; j < ETATS_CHOCOLAT.length; j++) {
 
                     byte etatChocolatEnCours = ETATS_CHOCOLAT[j];
