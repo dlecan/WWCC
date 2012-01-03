@@ -54,7 +54,7 @@ public class QoSCheckerTest {
             Object[] resultatsModifies = Arrays.copyOf(resultats,
                     attendus.length);
 
-            assertEquals(attendus, resultats);
+            assertEquals(attendus, resultatsModifies);
         }
     }
 
