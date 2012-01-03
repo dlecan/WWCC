@@ -20,12 +20,15 @@ public class QoSCheckerTest {
 
     // @Test
     public void test_wonka_data_2011_v2() throws Exception {
-        runTest("wonka_data_2011_v2");
+        runTest("wonka_data_2011_v2", null);
     }
 
     @Test
     public void test_test1() throws Exception {
-        runTest("test1");
+        Object[] resultats = new Object[] { "", 5400, 3600, 3600, 12600,
+                96.63461 };
+
+        runTest("test1", resultats);
     }
 
     private void runTest(String nomFichierTest, Object[] attendus)
