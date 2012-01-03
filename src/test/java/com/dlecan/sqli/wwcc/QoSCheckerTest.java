@@ -30,6 +30,14 @@ public class QoSCheckerTest {
 
         runTest("test1", resultats);
     }
+    
+    @Test
+    public void test_test2() throws Exception {
+        Object[] resultats = new Object[] { 374400, 5400, 3600, 3600, 12600,
+                ((float) 96.63461) };
+
+        runTest("test2", resultats);
+    }
 
     private void runTest(String nomFichierTest, Object[] attendus)
             throws URISyntaxException {
