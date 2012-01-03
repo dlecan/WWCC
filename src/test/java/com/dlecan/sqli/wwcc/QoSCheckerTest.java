@@ -46,7 +46,7 @@ public class QoSCheckerTest {
 
     @Test
     public void test_test3() throws Exception {
-        Object[] resultats = new Object[] { 374400, 5398, 3600, 4104, 13102 };
+        Object[] resultats = new Object[] { 374400, 5399, 3600, 4104, 13102 };
 
         runTest("test3", resultats);
     }
