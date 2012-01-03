@@ -40,7 +40,6 @@ public class LecanDamien_JSG_Wonka {
 
             NumberFormat percentInstance = NumberFormat.getPercentInstance(Locale.FRANCE);
             percentInstance.setMaximumFractionDigits(2);
-            percentInstance.setGroupingUsed(true);
             String qos = percentInstance.format(
                     resultats[5]);
             System.out
