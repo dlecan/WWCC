@@ -57,7 +57,7 @@ public class QoSChecker {
 
     private byte[] visites;
 
-    public String[] extractQoS(File qualityFile) {
+    public Object[] extractQoS(File qualityFile) {
         StopWatch stopWatch = new Slf4JStopWatch("extractQoS");
 
         LOGGER.info("Temps de fonctionnement th�orique : {} secondes",
