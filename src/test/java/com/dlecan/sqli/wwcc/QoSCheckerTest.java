@@ -21,7 +21,7 @@ public class QoSCheckerTest {
 
      @Test
     public void test_wonka_data_2011_v2() throws Exception {
-        runTest("wonka_data_2011_v2", null);
+        runTest("wonka_data_2011_v3", null);
     }
 
 //    @Test
