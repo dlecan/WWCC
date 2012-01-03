@@ -1,6 +1,7 @@
 package com.dlecan.sqli.wwcc;
 
 import java.io.File;
+import java.net.URISyntaxException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,12 +19,16 @@ public class QoSCheckerTest {
 
 	@Test
 	public void testExtractQoS() throws Exception {
-		StopWatch stopWatch = new Slf4JStopWatch("testExtractQoS");
+		runTest();
+	}
+
+    private void runTest() throws URISyntaxException {
+        StopWatch stopWatch = new Slf4JStopWatch("testExtractQoS");
 
 		qoSChecker.extractQoS(new File(getClass().getResource(
 				"/wonka_data_2011_v2.dat").toURI()));
 
 		stopWatch.stop();
-	}
+    }
 
 }
