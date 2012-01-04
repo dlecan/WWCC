@@ -71,6 +71,8 @@ public class QoSChecker {
         FIN_VISITE_MATIN = 12 * NB_SECONDES_HEURE;
         DEBUT_VISITE_APRES_MIDI = 14 * NB_SECONDES_HEURE;
         FIN_VISITE_APRES_MIDI = 16 * NB_SECONDES_HEURE;
+
+        donnees = new byte[NB_SECONDES_MOIS_11];
     }
 
     public Object[] extractQoS(File qualityFile) {
@@ -78,8 +80,6 @@ public class QoSChecker {
 
         LOGGER.debug("Temps de fonctionnement th\u00E9orique : {} secondes",
                 DUREE_FONCTIONNEMENT_THEORIQUE);
-
-        donnees = new byte[NB_SECONDES_MOIS_11];
 
         construireHeuresVisite();
         extraireIntervals(qualityFile);
@@ -197,7 +197,7 @@ public class QoSChecker {
                     0, (int) channel.size());
 
             // Pour stocker chaque "ligne" de donnees
-            byte[] buf = new byte[42];
+            final byte[] buf = new byte[42];
 
             while (byteBuffer.hasRemaining()) {
 
@@ -246,14 +246,13 @@ public class QoSChecker {
                     }
                     // else
                     // on saute la ligne car incohérente (date de fin AVANT date
-                    // de début) // Ignorée
+                    // de debut) Ignoree donc
 
                 } else {
-                    // Incohérence dans la ligne
+                    // Incoherence dans la ligne
                     // On saute pour le moment
                     // TODO
                 }
-
             }
 
         } catch (IOException e) {
