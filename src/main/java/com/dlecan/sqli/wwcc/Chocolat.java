@@ -15,67 +15,69 @@ import com.google.common.collect.Maps;
  */
 public enum Chocolat {
 
-	BLANC("1", "blanc", QoSChecker.ETAT_CHOCOLAT_BLANC),
+    BLANC((byte) '1', "blanc", QoSChecker.ETAT_CHOCOLAT_BLANC),
 
-	NOIR("2", "noir", QoSChecker.ETAT_CHOCOLAT_NOIR),
+    NOIR((byte) '2', "noir", QoSChecker.ETAT_CHOCOLAT_NOIR),
 
-	LAIT("3", "au lait", QoSChecker.ETAT_CHOCOLAT_LAIT);
+    LAIT((byte) '3', "au lait", QoSChecker.ETAT_CHOCOLAT_LAIT);
 
-	private static final Map<String, Chocolat> ASSOC_TYPE = Maps.newHashMap();
+    private static final Map<Byte, Chocolat> ASSOC_TYPE = Maps.newHashMap();
 
-	static {
-		for (Chocolat c : Chocolat.values()) {
-			ASSOC_TYPE.put(c.type, c);
-		}
-	}
+    static {
+        for (Chocolat c : Chocolat.values()) {
+            ASSOC_TYPE.put(c.type, c);
+        }
+    }
 
-	private static final Map<Byte, Chocolat> ASSOC_ETAT = Maps.newHashMap();
+    private static final Map<Byte, Chocolat> ASSOC_ETAT = Maps.newHashMap();
 
-	static {
-		for (Chocolat c : Chocolat.values()) {
-			ASSOC_ETAT.put(c.etat, c);
-		}
-	}
+    static {
+        for (Chocolat c : Chocolat.values()) {
+            ASSOC_ETAT.put(c.etat, c);
+        }
+    }
 
-	private final String type;
-	private final String nom;
-	private final byte etat;
+    private final byte type;
 
-	private Chocolat(String type, String nom, byte etat) {
-		this.type = type;
-		this.nom = nom;
-		this.etat = etat;
-	}
+    private final String nom;
 
-	/**
-	 * R�cup�re l'instance de {@link Chocolat} � partir de son type.
-	 * 
-	 * @param type
-	 *            Type : 1, 2 ou 3.
-	 * @return <code>null</code> Si type diff�rent de 1, 2 ou 3.
-	 */
-	public static Chocolat fromType(String type) {
-		return ASSOC_TYPE.get(type);
-	}
+    private final byte etat;
 
-	/**
-	 * R�cup�re l'instance de {@link Chocolat} � partir de son état.
-	 * 
-	 * @param type
-	 *            L'état.
-	 * @return <code>null</code> Si type inconnu.
-	 */
-	public static Chocolat fromEtat(byte etat) {
-		return ASSOC_ETAT.get(etat);
-	}
+    private Chocolat(byte type, String nom, byte etat) {
+        this.type = type;
+        this.nom = nom;
+        this.etat = etat;
+    }
 
-	@Override
-	public String toString() {
-		return nom;
-	}
+    /**
+     * R�cup�re l'instance de {@link Chocolat} � partir de son type.
+     * 
+     * @param type
+     *            Type : 1, 2 ou 3.
+     * @return <code>null</code> Si type diff�rent de 1, 2 ou 3.
+     */
+    public static Chocolat fromType(byte type) {
+        return ASSOC_TYPE.get(type);
+    }
 
-	public byte getEtat() {
-		return etat;
-	}
+    /**
+     * R�cup�re l'instance de {@link Chocolat} � partir de son état.
+     * 
+     * @param type
+     *            L'état.
+     * @return <code>null</code> Si type inconnu.
+     */
+    public static Chocolat fromEtat(byte etat) {
+        return ASSOC_ETAT.get(etat);
+    }
+
+    @Override
+    public String toString() {
+        return nom;
+    }
+
+    public byte getEtat() {
+        return etat;
+    }
 
 }

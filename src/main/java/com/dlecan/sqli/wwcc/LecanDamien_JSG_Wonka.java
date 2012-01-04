@@ -4,12 +4,16 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
+import org.perf4j.StopWatch;
+import org.perf4j.slf4j.Slf4JStopWatch;
+
 public class LecanDamien_JSG_Wonka {
 
     /**
      * @param args
      */
     public static void main(String[] args) {
+        StopWatch stopWatch = new Slf4JStopWatch("main");
         long debut = System.currentTimeMillis();
 
         if (args != null && args.length > 0) {
@@ -17,35 +21,51 @@ public class LecanDamien_JSG_Wonka {
             QoSChecker qoSChecker = new QoSChecker();
             Object[] resultats = qoSChecker.extractQoS(new File(args[0]));
 
-            System.out.println("Mois : Novembre 2011");
-            System.out.println("Client : The Willy Wonka Candy Company");
-            System.out.println();
-            
-            System.out.println(String.format(
-                    "Temps de fonctionnement th\u00E9orique : %s secondes",
-                    resultats[0]));
-            System.out.println(String.format(
-                    "Temps de rupture de chocolat blanc : %s secondes",
-                    resultats[1]));
-            System.out.println(String.format(
-                    "Temps de rupture de chocolat noir : %s secondes",
-                    resultats[2]));
-            System.out.println(String.format(
-                    "Temps de rupture de chocolat au lait : %s secondes",
-                    resultats[3]));
-            System.out.println(String.format(
-                    "Temps d'indisponibilit\u00E9 globale : %s secondes",
-                    resultats[4]));
-            System.out.println();
+            StringBuilder sb = new StringBuilder();
 
-            NumberFormat percentInstance = new DecimalFormat("00.0#%"); 
-            String qos = percentInstance.format(
-                    resultats[5]);
-            System.out
-                    .println("Qualit\u00E9 de Service novembre 2011 : " + qos);
-            System.out.println();
+            sb.append("Mois : Novembre 2011");
+            sb.append('\n');
+            sb.append("Client : The Willy Wonka Candy Company");
+            sb.append('\n');
+            sb.append('\n');
+
+            sb.append("Temps de fonctionnement th\u00E9orique : ");
+            sb.append(resultats[0]);
+            sb.append(" secondes");
+            sb.append('\n');
+
+            sb.append("Temps de rupture de chocolat blanc : ");
+            sb.append(resultats[1]);
+            sb.append(" secondes");
+            sb.append('\n');
+
+            sb.append("Temps de rupture de chocolat noir : ");
+            sb.append(resultats[2]);
+            sb.append(" secondes");
+            sb.append('\n');
+
+            sb.append("Temps de rupture de chocolat au lait : ");
+            sb.append(resultats[3]);
+            sb.append(" secondes");
+            sb.append('\n');
+
+            sb.append("Temps d'indisponibilit\u00E9 globale : ");
+            sb.append(resultats[4]);
+            sb.append(" secondes");
+            sb.append('\n');
+            sb.append('\n');
+
+            NumberFormat percentInstance = new DecimalFormat("00.0#%");
+            String qos = percentInstance.format(resultats[5]);
+            sb.append("Qualit\u00E9 de Service novembre 2011 : ");
+            sb.append(qos);
+            sb.append('\n');
+
+            System.out.println(sb.toString());
         }
-        
+
+        stopWatch.stop();
+
         System.out.println("time = " + (System.currentTimeMillis() - debut)
                 + " millis");
     }

@@ -1,10 +1,16 @@
 package com.dlecan.sqli.wwcc;
 
-import java.io.BufferedReader;
+import static com.dlecan.sqli.wwcc.Utils.NB_JOURS_MOIS_11;
+import static com.dlecan.sqli.wwcc.Utils.NB_SECONDES_HEURE;
+import static com.dlecan.sqli.wwcc.Utils.NB_SECONDES_JOURNEE;
+import static com.dlecan.sqli.wwcc.Utils.NB_SECONDES_MOIS_11;
+import static com.dlecan.sqli.wwcc.Utils.toInt;
+
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.Arrays;
 
 import org.perf4j.StopWatch;
@@ -14,46 +20,58 @@ import org.slf4j.LoggerFactory;
 
 public class QoSChecker {
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(QoSChecker.class);
+    private static Logger LOGGER;
 
-    private static final byte ETAT_DISPONIBLE = 1 << 0; // 1
+    private static byte ETAT_DISPONIBLE;
 
-    private static final byte ETAT_OUVERT_AUX_VISITES = 1 << 1; // 2
+    private static byte ETAT_OUVERT_AUX_VISITES;
 
-    public static final byte ETAT_CHOCOLAT_BLANC = 1 << 2; // 4
+    public static byte ETAT_CHOCOLAT_BLANC;
 
-    public static final byte ETAT_CHOCOLAT_NOIR = 1 << 3; // 8
+    public static byte ETAT_CHOCOLAT_NOIR;
 
-    public static final byte ETAT_CHOCOLAT_LAIT = 1 << 4; // 16
+    public static byte ETAT_CHOCOLAT_LAIT;
 
-    private static final byte[] ETATS_CHOCOLAT = { ETAT_CHOCOLAT_BLANC,
-            ETAT_CHOCOLAT_NOIR, ETAT_CHOCOLAT_LAIT };
+    private static byte[] ETATS_CHOCOLAT;
 
-    private static final int NB_SECONDES_HEURE = 60 * 60;
+    private static int DEBUT_VISITE_MATIN;
 
-    private static final int NB_SECONDES_JOURNEE = 24 * NB_SECONDES_HEURE;
+    private static int FIN_VISITE_MATIN;
 
-    private static final int NB_JOURS_MOIS_11 = 30;
+    private static int DEBUT_VISITE_APRES_MIDI;
 
-    private static final int NB_SECONDES_MOIS_11 = NB_JOURS_MOIS_11
-            * NB_SECONDES_JOURNEE;
-
-    private static final int DEBUT_VISITE_MATIN = 10 * NB_SECONDES_HEURE;
-
-    private static final int FIN_VISITE_MATIN = 12 * NB_SECONDES_HEURE;
-
-    private static final int DEBUT_VISITE_APRES_MIDI = 14 * NB_SECONDES_HEURE;
-
-    private static final int FIN_VISITE_APRES_MIDI = 16 * NB_SECONDES_HEURE;
+    private static int FIN_VISITE_APRES_MIDI;
 
     /**
-     * Duree de fonctionnement theorique (novembre), en secondes : (5j (S1) +
-     * 3 * 6j (S2, S3, S4) + 3 (S5)) * 4h * 60min * 60s.
+     * Duree de fonctionnement theorique (novembre), en secondes : (5j (S1) + 3 *
+     * 6j (S2, S3, S4) + 3 (S5)) * 4h * 60min * 60s.
      */
-    private static final int DUREE_FONCTIONNEMENT_THEORIQUE = (5 + 3 * 6 + 3) * 4 * 60 * 60;
+    private static int DUREE_FONCTIONNEMENT_THEORIQUE;
 
     private byte[] donnees;
+
+    /**
+     * Constructeur.
+     */
+    public QoSChecker() {
+        init();
+    }
+
+    private void init() {
+        LOGGER = LoggerFactory.getLogger(QoSChecker.class);
+        DUREE_FONCTIONNEMENT_THEORIQUE = (5 + 3 * 6 + 3) * 4 * 60 * 60;
+        ETAT_DISPONIBLE = 1 << 0; // 1
+        ETAT_OUVERT_AUX_VISITES = 1 << 1; // 2
+        ETAT_CHOCOLAT_BLANC = 1 << 2; // 4
+        ETAT_CHOCOLAT_NOIR = 1 << 3; // 8
+        ETAT_CHOCOLAT_LAIT = 1 << 4; // 16
+        ETATS_CHOCOLAT = new byte[] { ETAT_CHOCOLAT_BLANC, ETAT_CHOCOLAT_NOIR,
+                ETAT_CHOCOLAT_LAIT };
+        DEBUT_VISITE_MATIN = 10 * NB_SECONDES_HEURE;
+        FIN_VISITE_MATIN = 12 * NB_SECONDES_HEURE;
+        DEBUT_VISITE_APRES_MIDI = 14 * NB_SECONDES_HEURE;
+        FIN_VISITE_APRES_MIDI = 16 * NB_SECONDES_HEURE;
+    }
 
     public Object[] extractQoS(File qualityFile) {
         StopWatch stopWatch = new Slf4JStopWatch("extractQoS");
@@ -169,12 +187,25 @@ public class QoSChecker {
     private void extraireIntervals(File qualityFile) {
         StopWatch stopWatch = new Slf4JStopWatch("extractIntervals");
 
-        BufferedReader br = null;
+        FileInputStream fileInputStream = null;
+        FileChannel channel = null;
         try {
-            br = new BufferedReader(new FileReader(qualityFile));
+            fileInputStream = new FileInputStream(qualityFile);
+            channel = fileInputStream.getChannel();
 
-            for (String line = br.readLine(); line != null; line = br
-                    .readLine()) {
+            ByteBuffer byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY,
+                    0, (int) channel.size());
+
+            // Pour stocker chaque "ligne" de donnees
+            byte[] buf = new byte[42];
+
+            while (byteBuffer.hasRemaining()) {
+
+                byteBuffer.get(buf);
+                if (byteBuffer.remaining() > 42) {
+                    // Suppression du caractère 'retour ligne'
+                    byteBuffer.get();
+                }
 
                 // Le concours porte sur le mois de novembre uniquement
                 // On filtre les lignes qui ne nous concerne pas
@@ -184,47 +215,59 @@ public class QoSChecker {
                 // d'ete
                 // A 2h, on saute directement a 3h
 
-                // Si les 3e et 4e caracteres sont '1', on est sur le mois de
-                // novembre
-                if (line.charAt(3) == '1' && line.charAt(4) == '1') {
-                    // if (line.contains("/11/2011")) {
+                int moisDebut = toInt(buf, 3, 4);
+                int moisFin = toInt(buf, 23, 24);
 
-                    String[] s = line.split(";");
+                if (moisDebut == 11 && moisFin == 11) {
 
-                    // if (s.length != 3) {
-                    // LOGGER.warn(
-                    // "Skip line [{}] because it isn't well-formatted",
-                    // line);
-                    // }
-                    try {
-                        String strDebut = s[0];
-                        String strFin = s[1];
-                        String type = s[2];
+                    int jourDebut = toInt(buf, 0, 1);
+                    int heureDebut = toInt(buf, 11, 12);
+                    int minutesDebut = toInt(buf, 14, 15);
+                    int secondesDebut = toInt(buf, 17, 18);
 
-                        int deltaDebut = Utils.getDelta(strDebut);
-                        assert deltaDebut >= 0;
+                    int deltaDebut = Utils.getDelta(jourDebut, heureDebut,
+                            minutesDebut, secondesDebut);
 
-                        int deltaFin = Utils.getDelta(strFin);
-                        assert deltaFin >= 0;
+                    int jourFin = toInt(buf, 20, 21);
+                    int heureFin = toInt(buf, 31, 32);
+                    int minutesFin = toInt(buf, 34, 35);
+                    int secondesFin = toInt(buf, 37, 38);
+
+                    int deltaFin = Utils.getDelta(jourFin, heureFin,
+                            minutesFin, secondesFin);
+
+                    if (deltaFin >= deltaDebut) {
+
+                        // Extraction du type de chocolat
+                        byte type = buf[40];
 
                         stockerIndisponibiliteChocolat(type, deltaDebut,
                                 deltaFin);
-
-                    } catch (IllegalArgumentException e) {
-                        LOGGER.warn("Skip line [{}] because : {}",
-                                new Object[] { line, e.getMessage() });
                     }
+                    // else
+                    // on saute la ligne car incohérente (date de fin AVANT date
+                    // de début) // Ignorée
+
+                } else {
+                    // Incohérence dans la ligne
+                    // On saute pour le moment
+                    // TODO
                 }
+
             }
 
-        } catch (FileNotFoundException e) {
-            throw new QoSCheckerException(e);
         } catch (IOException e) {
             throw new QoSCheckerException(e);
         } finally {
-            if (br != null) {
+            if (fileInputStream != null) {
                 try {
-                    br.close();
+                    fileInputStream.close();
+                } catch (IOException e) {
+                }
+            }
+            if (channel != null) {
+                try {
+                    channel.close();
                 } catch (IOException e) {
                 }
             }
@@ -232,7 +275,7 @@ public class QoSChecker {
         stopWatch.stop();
     }
 
-    private void stockerIndisponibiliteChocolat(String type, int deltaDebut,
+    private void stockerIndisponibiliteChocolat(byte type, int deltaDebut,
             int deltaFin) {
 
         byte etatChocolat = typeChocolatToEtat(type);
@@ -250,7 +293,7 @@ public class QoSChecker {
 
     }
 
-    private byte typeChocolatToEtat(String typeChocolat) {
+    private byte typeChocolatToEtat(byte typeChocolat) {
         return Chocolat.fromType(typeChocolat).getEtat();
     }
 
