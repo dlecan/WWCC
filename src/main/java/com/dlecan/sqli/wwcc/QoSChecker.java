@@ -22,8 +22,6 @@ public class QoSChecker {
 
     private static Logger LOGGER;
 
-    private static byte ETAT_DISPONIBLE;
-
     private static byte ETAT_OUVERT_AUX_VISITES;
 
     public static byte ETAT_CHOCOLAT_BLANC;
@@ -42,9 +40,17 @@ public class QoSChecker {
 
     private static int FIN_VISITE_APRES_MIDI;
 
+    private static int NUM_MOIS_NOVEMBRE;
+
     /**
-     * Duree de fonctionnement theorique (novembre), en secondes : (5j (S1) + 3 *
-     * 6j (S2, S3, S4) + 3 (S5)) * 4h * 60min * 60s.
+     * Inclus le caractère de fin de ligne windows (\r\n)
+     */
+    private static int NB_BYTES_PAR_LIGNE_NORMALE;
+
+    private static int NB_BYTES_PAR_LIGNE_NORMALE_SS_FIN_LIGNE;
+
+    /**
+     * Duree de fonctionnement theorique (novembre), en secondes.
      */
     private static int DUREE_FONCTIONNEMENT_THEORIQUE;
 
@@ -59,18 +65,22 @@ public class QoSChecker {
 
     private void init() {
         LOGGER = LoggerFactory.getLogger(QoSChecker.class);
+
+        // (5j (S1) + 3 * 6j (S2, S3, S4) + 3 (S5)) * 4h * 60min * 60s
         DUREE_FONCTIONNEMENT_THEORIQUE = (5 + 3 * 6 + 3) * 4 * 60 * 60;
-        ETAT_DISPONIBLE = 1 << 0; // 1
-        ETAT_OUVERT_AUX_VISITES = 1 << 1; // 2
-        ETAT_CHOCOLAT_BLANC = 1 << 2; // 4
-        ETAT_CHOCOLAT_NOIR = 1 << 3; // 8
-        ETAT_CHOCOLAT_LAIT = 1 << 4; // 16
+        ETAT_OUVERT_AUX_VISITES = 1 << 0; // 1
+        ETAT_CHOCOLAT_BLANC = 1 << 1; // 2
+        ETAT_CHOCOLAT_NOIR = 1 << 2; // 4
+        ETAT_CHOCOLAT_LAIT = 1 << 3; // 8
         ETATS_CHOCOLAT = new byte[] { ETAT_CHOCOLAT_BLANC, ETAT_CHOCOLAT_NOIR,
                 ETAT_CHOCOLAT_LAIT };
         DEBUT_VISITE_MATIN = 10 * NB_SECONDES_HEURE;
         FIN_VISITE_MATIN = 12 * NB_SECONDES_HEURE;
         DEBUT_VISITE_APRES_MIDI = 14 * NB_SECONDES_HEURE;
         FIN_VISITE_APRES_MIDI = 16 * NB_SECONDES_HEURE;
+        NB_BYTES_PAR_LIGNE_NORMALE = 43;
+        NB_BYTES_PAR_LIGNE_NORMALE_SS_FIN_LIGNE = NB_BYTES_PAR_LIGNE_NORMALE - 2;
+        NUM_MOIS_NOVEMBRE = 11;
 
         donnees = new byte[NB_SECONDES_MOIS_11];
     }
@@ -117,8 +127,7 @@ public class QoSChecker {
     }
 
     private Object[] mesureQoS() {
-        StopWatch stopWatch = new Slf4JStopWatch(
-                "mesureQoS");
+        StopWatch stopWatch = new Slf4JStopWatch("mesureQoS");
 
         int[] tempsChaqueChocolat = new int[ETAT_CHOCOLAT_LAIT + 1];
 
@@ -129,8 +138,7 @@ public class QoSChecker {
 
             byte donnee = donnees[i];
 
-            if (contient(donnee, ETAT_OUVERT_AUX_VISITES)
-                    && !contient(donnee, ETAT_DISPONIBLE)) {
+            if (contient(donnee, ETAT_OUVERT_AUX_VISITES)) {
 
                 boolean auMoinsUnChocolatIndisponible = false;
 
@@ -193,14 +201,20 @@ public class QoSChecker {
                     0, (int) channel.size());
 
             // Pour stocker chaque "ligne" de donnees
-            final byte[] buf = new byte[42];
+            final byte[] buf = new byte[NB_BYTES_PAR_LIGNE_NORMALE_SS_FIN_LIGNE];
 
             while (byteBuffer.hasRemaining()) {
 
-                byteBuffer.get(buf);
-                if (byteBuffer.remaining() > 42) {
+                if (byteBuffer.remaining() >= NB_BYTES_PAR_LIGNE_NORMALE) {
+                    byteBuffer.get(buf);
                     // Suppression du caractère 'retour ligne'
                     byteBuffer.get();
+                    byteBuffer.get();
+                } else if (byteBuffer.remaining() == NB_BYTES_PAR_LIGNE_NORMALE_SS_FIN_LIGNE) {
+                    byteBuffer.get(buf);
+                } else {
+                    // Dernière ligne mal foutue
+                    break;
                 }
 
                 // Le concours porte sur le mois de novembre uniquement
@@ -214,7 +228,8 @@ public class QoSChecker {
                 int moisDebut = toInt(buf, 3, 4);
                 int moisFin = toInt(buf, 23, 24);
 
-                if (moisDebut == 11 && moisFin == 11) {
+                if (moisDebut == NUM_MOIS_NOVEMBRE
+                        && moisFin == NUM_MOIS_NOVEMBRE) {
 
                     int jourDebut = toInt(buf, 0, 1);
                     int heureDebut = toInt(buf, 11, 12);
@@ -244,10 +259,14 @@ public class QoSChecker {
                     // on saute la ligne car incohérente (date de fin AVANT date
                     // de debut) Ignoree donc
 
-                } else {
+                } else if (moisDebut == NUM_MOIS_NOVEMBRE
+                        || moisFin == NUM_MOIS_NOVEMBRE) {
+                    System.out.println(">>>>>> " + new String(buf));
                     // Incoherence dans la ligne
                     // On saute pour le moment
                     // TODO
+                } else {
+                    // ne concerne pas le mois de novembre
                 }
             }
 

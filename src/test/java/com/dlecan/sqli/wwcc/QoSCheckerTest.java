@@ -51,6 +51,20 @@ public class QoSCheckerTest {
         runTest("test3", resultats);
     }
 
+    @Test
+    public void test_test4() throws Exception {
+        Object[] resultats = new Object[] { 374400, 7200, 0, 0, 7200 };
+
+        runTest("test4", resultats);
+    }
+
+    @Test
+    public void test_test5() throws Exception {
+        Object[] resultats = new Object[] { 374400, 36000, 21600, 36000, 86400 };
+
+        runTest("test5", resultats);
+    }
+
     private void runTest(String nomFichierTest, Object[] attendus)
             throws URISyntaxException {
         StopWatch stopWatch = new Slf4JStopWatch("testExtractQoS_"
