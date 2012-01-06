@@ -1,410 +1,160 @@
 package com.dlecan.sqli.wwcc;
 
-import java.io.BufferedReader;
+import static com.dlecan.sqli.wwcc.Utils.toInt;
+
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Interval;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.perf4j.StopWatch;
-import org.perf4j.slf4j.Slf4JStopWatch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Ordering;
-import com.google.common.collect.SortedSetMultimap;
-import com.google.common.collect.TreeMultimap;
-
+/**
+ * Classe principale.
+ * 
+ * @author dlecan
+ */
 public class QoSChecker {
 
-	private static final DateTimeFormatter DTF = DateTimeFormat.forPattern(
-			"dd/MM/yyyy HH:mm:ss").withZone(DateTimeZone.forID("Europe/Paris"));
-
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(QoSChecker.class);
-
-	private static final Map<String, Interval> CACHE_INTERVAL = new HashMap<String, Interval>();
-
-	/**
-	 * Durée de fonctionnement théorique (novembre) : (5j (S1) + 3 * 6j (S2, S3,
-	 * S4) + 3 (S5)) * 4h * 60min * 60s.
-	 */
-	private static final long DUREE_FONCTIONNEMENT_THEORIQUE = (5 + 3 * 6 + 3) * 4 * 60 * 60;
-
-	public String extractQoS(File qualityFile) {
-		StopWatch stopWatch = new Slf4JStopWatch("extractQoS");
-
-		LOGGER.info("Temps de fonctionnement théorique : {} secondes",
-				DUREE_FONCTIONNEMENT_THEORIQUE);
-
-		Multimap<Chocolat, Interval> intervalsChocolats = extractIntervals(qualityFile);
-
-		// intervalsChocolats = mergeIntervals(intervalsChocolats);
-
-		tempsPendantLequelManqueChaqueTypeChocolat(intervalsChocolats);
-		tempsPendantLequelManqueAuMoinsUnTypeChocolat(intervalsChocolats);
-
-		stopWatch.stop();
-		return "";
-	}
-
-	private Multimap<Chocolat, Interval> mergeIntervals(
-			Multimap<Chocolat, Interval> intervalsChocolats) {
-		StopWatch stopWatch = new Slf4JStopWatch("mergeIntervals");
-
-		Multimap<Chocolat, Interval> result = ArrayListMultimap.create();
-
-		for (Chocolat chocolat : Chocolat.values()) {
-
-			Collection<Interval> intervals = intervalsChocolats.get(chocolat);
-
-			int nbIntervalsAvantFusion = intervals.size();
-
-			Iterator<Interval> iteratorIntervals = intervals.iterator();
-
-			// On a forcément un interval par chocolat, inutile de tester
-			// si il y en a au moins un.
-			Interval previousInterval = iteratorIntervals.next();
-
-			while (iteratorIntervals.hasNext()) {
-
-				Interval currentInterval = iteratorIntervals.next();
-
-				if (previousInterval.contains(currentInterval)) {
-					// L'interval 'current' ne sert à rien, il est inclus
-					// dans un autre. On ne le garde pas
-					result.put(chocolat, previousInterval);
-				} else if (previousInterval.abuts(currentInterval)
-						|| previousInterval.overlaps(currentInterval)) {
-					// Les 2 intervals se touchent ou se recouvrent.
-					// On les fusionnent
-					previousInterval = new Interval(
-							previousInterval.getStart(), currentInterval
-									.getEnd());
-					result.put(chocolat, previousInterval);
-				} else {
-					// Cas du "gap"
-					// On garde l'interval le plus ancien et on saute au
-					// suivant.
-					result.put(chocolat, previousInterval);
-					previousInterval = currentInterval;
-				}
-
-			}
-
-			LOGGER.debug(
-					"Nb intervals pour le chocolat {} || Avant {} || Après {}",
-					new Object[] { chocolat, nbIntervalsAvantFusion,
-							result.get(chocolat).size() });
-
-		}
-
-		stopWatch.stop();
-
-		return result;
-	}
-
-	private void tempsPendantLequelManqueChaqueTypeChocolat(
-			Multimap<Chocolat, Interval> intervalsChocolats) {
-		StopWatch stopWatch = new Slf4JStopWatch(
-				"tempsPendantLequelManqueChaqueTypeChocolat");
-
-		for (Chocolat chocolat : Chocolat.values()) {
-
-			Collection<Interval> intervals = intervalsChocolats.get(chocolat);
-
-			LOGGER.debug("Nb intervals pour le chocolat {} : {}", new Object[] {
-					chocolat, intervals.size() });
-
-			long dureeTotale = 0;
-
-			for (Interval interval : intervals) {
-				dureeTotale += interval.toDurationMillis();
-			}
-
-			long dureeTotalFinale = TimeUnit.SECONDS.convert(dureeTotale,
-					TimeUnit.MILLISECONDS);
-
-			LOGGER.info("Temps de rupture de chocolat {} : {} secondes",
-					new Object[] { chocolat.toString(), dureeTotalFinale });
-
-		}
-
-		stopWatch.stop();
-	}
-
-	private void tempsPendantLequelManqueAuMoinsUnTypeChocolat(
-			Multimap<Chocolat, Interval> intervalsChocolats) {
-		StopWatch stopWatch = new Slf4JStopWatch(
-				"tempsPendantLequelManqueAuMoinsUnTypeChocolat");
-
-		long dureeTotale = 0;
-
-		long dureeTotalFinale = TimeUnit.SECONDS.convert(dureeTotale,
-				TimeUnit.MILLISECONDS);
-
-		LOGGER.info("Temps d'indisponibilité globale : {} secondes",
-				dureeTotalFinale);
-
-		stopWatch.stop();
-	}
-
-	private SortedSetMultimap<Chocolat, Interval> extractIntervals(
-			File qualityFile) {
-		StopWatch stopWatch = new Slf4JStopWatch("extractIntervals");
-		TreeMultimap<Chocolat, Interval> result = TreeMultimap.create(Ordering
-				.natural(), new OlderFirstIntervalComparator());
-
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new FileReader(qualityFile));
-
-			for (String line = br.readLine(); line != null; line = br
-					.readLine()) {
-
-				// Le concours porte sur le mois de novembre uniquement
-				// On filtre les lignes qui ne nous concerne pas
-				// On ne prend pas le risque de parser les autres dates
-				// car certaines n'ont pas de sens dans la TZ Paris
-				// Exemple : 27/03/2011 02:24:25, car changement d'heure d'été
-				// A 2h, on saute directement à 3h
-				if (line.indexOf("/11/2011") != -1) {
-
-					String[] s = line.split(";");
-
-					if (s.length != 3) {
-						LOGGER
-								.warn(
-										"Skip line [{}] because it isn't well-formatted",
-										line);
-					}
-					try {
-						String strDebut = s[0];
-						String strFin = s[1];
-						String type = s[2];
-
-						DateTime debut = DTF.parseDateTime(strDebut);
-						DateTime fin = DTF.parseDateTime(strFin);
-
-						Collection<Interval> intervals = extraireIntervalsEnTenantCompteHeureDeVisite(
-								debut, fin);
-
-						Chocolat chocolat = Chocolat.fromType(type);
-						result.putAll(chocolat, intervals);
-
-					} catch (IllegalArgumentException e) {
-						LOGGER.warn("Skip line [{}] because : {}",
-								new Object[] { line, e.getMessage() });
-					}
-				}
-			}
-
-		} catch (FileNotFoundException e) {
-			throw new QoSCheckerException(e);
-		} catch (IOException e) {
-			throw new QoSCheckerException(e);
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-				}
-			}
-		}
-		stopWatch.stop();
-		return result;
-	}
-
-	private char[] reformatString(String m) {
-		char[] strChar0 = new char[] {
-		// yyyy
-				m.charAt(6), m.charAt(7), m.charAt(8), m.charAt(9),
-				// -
-				'-',
-				// MM
-				m.charAt(3), m.charAt(4),
-				// -
-				'-',
-				// dd
-				m.charAt(0), m.charAt(1),
-				// ' '
-				' ',
-				// HH
-				m.charAt(11), m.charAt(12),
-				// :
-				':',
-				// mm
-				m.charAt(14), m.charAt(15),
-				// :
-				':',
-				// ss
-				m.charAt(17), m.charAt(18), };
-		return strChar0;
-	}
-
-	private Collection<Interval> extraireIntervalsEnTenantCompteHeureDeVisite(
-			DateTime debut, DateTime fin) {
-
-		Interval intervalDeVisiteMatin = intervalDeVisiteMatin(debut);
-		Interval intervalDeVisiteMidi = intervalDeVisiteMidi(debut);
-		Interval intervalDeVisiteApresMidi = intervalDeVisiteApresMidi(debut);
-
-		Collection<Interval> result = Lists.newArrayList();
-
-		if (intervalDeVisiteMatin.contains(debut)) {
-
-			DateTime debutReel = debut;
-
-			DateTime finRelle;
-			if (intervalDeVisiteMatin.contains(fin)) {
-
-				finRelle = fin;
-				result.add(new Interval(debutReel, finRelle));
-
-			} else if (intervalDeVisiteMidi.contains(fin)) {
-
-				finRelle = intervalDeVisiteMatin.getEnd();
-				result.add(new Interval(debutReel, finRelle));
-
-			} else if (intervalDeVisiteApresMidi.contains(fin)) {
-
-				finRelle = intervalDeVisiteMatin.getEnd();
-				result.add(new Interval(debutReel, finRelle));
-
-				// Besoin d'un 2è interval
-				result.add(new Interval(intervalDeVisiteApresMidi.getStart(),
-						fin));
-			} else {
-
-				finRelle = intervalDeVisiteMatin.getEnd();
-				result.add(new Interval(debutReel, finRelle));
-
-				// Besoin d'un 2è interval
-				result.add(new Interval(intervalDeVisiteApresMidi.getStart(),
-						intervalDeVisiteApresMidi.getEnd()));
-			}
-
-		} else if (intervalDeVisiteMatin.isAfter(debut)) {
-
-			DateTime debutReel = intervalDeVisiteMatin.getStart();
-
-			DateTime finRelle;
-			if (intervalDeVisiteMatin.isAfter(fin)) {
-				// Rien
-
-			} else if (intervalDeVisiteMatin.contains(fin)) {
-
-				finRelle = fin;
-				result.add(new Interval(debutReel, finRelle));
-
-			} else if (intervalDeVisiteMidi.contains(fin)) {
-
-				finRelle = intervalDeVisiteMatin.getEnd();
-				result.add(new Interval(debutReel, finRelle));
-
-			} else if (intervalDeVisiteApresMidi.contains(fin)) {
-
-				finRelle = intervalDeVisiteMatin.getEnd();
-
-				result.add(new Interval(debutReel, finRelle));
-
-				// Besoin d'un 2è interval
-				result.add(new Interval(intervalDeVisiteApresMidi.getStart(),
-						fin));
-			} else {
-				finRelle = intervalDeVisiteMatin.getEnd();
-
-				result.add(new Interval(debutReel, finRelle));
-
-				// Besoin d'un 2è interval
-				result.add(new Interval(intervalDeVisiteApresMidi.getStart(),
-						intervalDeVisiteApresMidi.getEnd()));
-			}
-
-		} else if (intervalDeVisiteMidi.contains(debut)) {
-			// Interval du matin avant la date de debut
-			// Visite du matin pas effectée par la panne
-
-			// On regarde ce que cela donne pour la visite de l'après-midi
-
-			DateTime debutReel = intervalDeVisiteApresMidi.getStart();
-
-			if (intervalDeVisiteApresMidi.contains(fin)) {
-
-				result.add(new Interval(debutReel, fin));
-
-			} else if (intervalDeVisiteApresMidi.isBefore(fin)) {
-
-				result.add(new Interval(debutReel, intervalDeVisiteApresMidi
-						.getEnd()));
-
-			}
-			// Pas de else, les 2 dates sont sur la pause de midi :)
-			// L'interval est exclu
-		} else if (intervalDeVisiteApresMidi.contains(debut)) {
-			
-			DateTime debutReel = debut;
-
-			if (intervalDeVisiteApresMidi.contains(fin)) {
-
-				result.add(new Interval(debutReel, fin));
-
-			} else if (intervalDeVisiteApresMidi.isBefore(fin)) {
-
-				result.add(new Interval(debutReel, intervalDeVisiteApresMidi
-						.getEnd()));
-
-			}
-		} else {
-			// Rien
-		}
-
-		return result;
-	}
-
-	private Interval intervalDeVisiteMatin(DateTime date) {
-		return intervalDeVisite(date, 10, 12);
-	}
-
-	private Interval intervalDeVisiteMidi(DateTime date) {
-		return intervalDeVisite(date, 12, 14);
-	}
-
-	private Interval intervalDeVisiteApresMidi(DateTime date) {
-		return intervalDeVisite(date, 14, 16);
-	}
-
-	private Interval intervalDeVisite(DateTime date, int debut, int fin) {
-		int annee = date.getYear();
-		int mois = date.getMonthOfYear();
-		int jour = date.getDayOfMonth();
-
-		String cle = String.valueOf(annee) + String.valueOf(mois)
-				+ String.valueOf(jour) + String.valueOf(debut)
-				+ String.valueOf(fin);
-		
-		Interval cachedInterval = CACHE_INTERVAL.get(cle);
-
-		if (cachedInterval == null) {
-			cachedInterval = new Interval(new DateTime(annee, mois, jour,
-					debut, 00, 00),
-					new DateTime(annee, mois, jour, fin, 00, 00));
-			CACHE_INTERVAL.put(cle, cachedInterval);
-		}
-
-		return cachedInterval;
-	}
+    private static int NUM_MOIS_NOVEMBRE = 11;
+
+    /**
+     * Inclus le caractere de fin de ligne windows (\r\n)
+     */
+    private static int NB_BYTES_PAR_LIGNE_NORMALE = 43;
+
+    private static int NB_BYTES_PAR_LIGNE_NORMALE_SS_FIN_LIGNE = NB_BYTES_PAR_LIGNE_NORMALE - 2;
+
+    /**
+     * Constructeur.
+     */
+    public QoSChecker() {
+        // Rien
+    }
+
+    public TimeLine extractQoS(File qualityFile) {
+        TimeLineBuilder builder = new TimeLineBuilder();
+
+        builder.forMonth(NUM_MOIS_NOVEMBRE);
+
+        // Ajout des visites d'enfants
+        // Pour le moment, ne fait rien (donnees en "dur" dans le buidler), mais
+        // c'est pour l'exemple d'usage de l'API.
+        builder.withVisiteEnfant(10, 00, 12, 00);
+        builder.withVisiteEnfant(14, 00, 16, 00);
+
+        builder.finParametrageStatique();
+
+        ajouterIndisponibilites(qualityFile, builder);
+
+        return builder.build();
+    }
+
+    private void ajouterIndisponibilites(File qualityFile,
+            TimeLineBuilder builder) {
+        FileInputStream fileInputStream = null;
+        FileChannel channel = null;
+        try {
+            fileInputStream = new FileInputStream(qualityFile);
+            channel = fileInputStream.getChannel();
+
+            ByteBuffer byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY,
+                    0, (int) channel.size());
+
+            // Pour stocker chaque "ligne" de donnees
+            final byte[] buf = new byte[NB_BYTES_PAR_LIGNE_NORMALE_SS_FIN_LIGNE];
+
+            while (byteBuffer.hasRemaining()) {
+
+                // Les 3 tests qui suivent correspondent aux cas suivants :
+                // 1/ ligne normale, avec caracteres de fin de ligne
+                // 2/ ligne de fin de fichier, sans caracteres de ligne
+                // 3/ ligne qui ne contient, a priori, rien d'interessant
+                if (byteBuffer.remaining() >= NB_BYTES_PAR_LIGNE_NORMALE) {
+                    byteBuffer.get(buf);
+                    // Suppression du caractere 'retour ligne'
+                    byteBuffer.get();
+                    byteBuffer.get();
+                } else if (byteBuffer.remaining() == NB_BYTES_PAR_LIGNE_NORMALE_SS_FIN_LIGNE) {
+                    byteBuffer.get(buf);
+                } else {
+                    // Derniere ligne, mal foutue, on quitte.
+                    break;
+                }
+
+                // Le concours porte sur le mois de novembre uniquement
+                // On filtre les lignes qui ne nous concerne pas
+                // On ne prend pas le risque de parser les autres dates
+                // car certaines n'ont pas de sens dans la TZ Paris
+                // Exemple : 27/03/2011 02:24:25, car changement d'heure
+                // d'ete
+                // A 2h, on saute directement a 3h
+
+                int moisDebut = toInt(buf, 3, 4);
+                int moisFin = toInt(buf, 23, 24);
+
+                if (moisDebut == NUM_MOIS_NOVEMBRE
+                        && moisFin == NUM_MOIS_NOVEMBRE) {
+
+                    int deltaDebut = getDeltaDebut(buf);
+                    int deltaFin = getDeltaFin(buf);
+
+                    if (deltaFin >= deltaDebut) {
+
+                        // Extraction du type de chocolat
+                        byte type = buf[40];
+
+                        // Ajout de l'intervalle d'indisponbilite
+                        builder.withIndispoDepuisDebutDuMoisPourChocolatDonne(
+                                type, deltaDebut, deltaFin);
+                    }
+                    // else
+                    // on saute la ligne car incoherente (date de fin AVANT date
+                    // de debut)
+                    // Ignoree donc
+
+                } else if (moisDebut == NUM_MOIS_NOVEMBRE
+                        || moisFin == NUM_MOIS_NOVEMBRE) {
+                    // Ligne sur 2 mois.
+                    // On saute ? La spec ne dit rien sur le sujet.
+                } else {
+                    // ne concerne pas le mois de novembre
+                }
+            }
+
+        } catch (IOException e) {
+            throw new QoSCheckerException(e);
+        } finally {
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                }
+            }
+            if (channel != null) {
+                try {
+                    channel.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+    }
+
+    private int getDeltaFin(final byte[] buf) {
+        int jourFin = toInt(buf, 20, 21);
+        int heureFin = toInt(buf, 31, 32);
+        int minutesFin = toInt(buf, 34, 35);
+        int secondesFin = toInt(buf, 37, 38);
+
+        return Utils.getDelta(jourFin, heureFin, minutesFin, secondesFin);
+    }
+
+    private int getDeltaDebut(final byte[] buf) {
+        int jourDebut = toInt(buf, 0, 1);
+        int heureDebut = toInt(buf, 11, 12);
+        int minutesDebut = toInt(buf, 14, 15);
+        int secondesDebut = toInt(buf, 17, 18);
+
+        return Utils.getDelta(jourDebut, heureDebut, minutesDebut,
+                secondesDebut);
+    }
 }
