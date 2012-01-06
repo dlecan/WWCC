@@ -63,14 +63,14 @@ public final class TimeLineBuilder {
      * Constructeur.
      */
     public TimeLineBuilder() {
-        premierDimancheDuMois = trouverPremierDimancheDuMois();
-
         premierJourDuMois = Calendar.getInstance();
         premierJourDuMois.set(annee, mois, 1);
 
         nbJoursMois = premierJourDuMois.getActualMaximum(Calendar.DAY_OF_MONTH);
         nbSecondesMois = nbJoursMois * NB_SECONDES_JOURNEE;
 
+        premierDimancheDuMois = trouverPremierDimancheDuMois();
+        
         donnees = new byte[nbSecondesMois];
 
         visitesEnfants = new ArrayList<int[]>();
@@ -172,7 +172,17 @@ public final class TimeLineBuilder {
     }
 
     private int trouverPremierDimancheDuMois() {
-        return 6;
+        int premierDimancheDuMois = 0;
+
+        while (premierDimancheDuMois == 0) {
+            int jourDuMois = premierJourDuMois.get(Calendar.DAY_OF_MONTH);
+            int jourDeLaSemaine = premierJourDuMois.get(Calendar.DAY_OF_WEEK);
+            if (jourDeLaSemaine == Calendar.SUNDAY) {
+                premierDimancheDuMois = jourDuMois;
+            }
+            premierJourDuMois.set(Calendar.DAY_OF_MONTH, jourDuMois + 1);
+        }
+        return premierDimancheDuMois;
     }
 
     private void calculerDureeFonctionnementTheorique() {
