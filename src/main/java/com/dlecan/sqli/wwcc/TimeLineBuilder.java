@@ -17,16 +17,16 @@ import java.util.List;
 /**
  * Le constructeur de {@link TimeLine}.
  * <p>
- * Le builder stocke un gros tableau (<code>donnees</code>), dont chaque
- * cellule représente 1 seconde du mois dont on veut analyser la QoS.
+ * Le builder stocke un gros tableau (<code>donnees</code>), dont chaque cellule
+ * represente 1 seconde du mois dont on veut analyser la QoS.
  * </p>
  * <p>
- * Chaque cellule (1 sconde donc) contient plusieurs informations, stockée sous
+ * Chaque cellule (1 sconde donc) contient plusieurs informations, stockee sous
  * forme d'octet :
  * </p>
  * <ul>
- * <li>0 : valeur par défaut : ni indispo chocolat, ni visite d'enfant,</li>
- * <li>n : combiné sous forme d'octet visite ou indispo d'un ou plusieurs
+ * <li>0 : valeur par defaut : ni indispo chocolat, ni visite d'enfant,</li>
+ * <li>n : combine sous forme d'octet visite ou indispo d'un ou plusieurs
  * chocolat.</li>
  * </ul>
  * 
@@ -45,9 +45,9 @@ public final class TimeLineBuilder {
 
     private byte[] donnees;
 
-    private TimeLine tl;
+    private final TimeLine tl;
 
-    private Calendar premierJourDuMois;
+    private final Calendar premierJourDuMois;
 
     private int mois;
 
@@ -57,21 +57,13 @@ public final class TimeLineBuilder {
 
     private int annee;
 
-    private List<int[]> visitesEnfants;
+    private final List<int[]> visitesEnfants;
 
     /**
      * Constructeur.
      */
     public TimeLineBuilder() {
         premierJourDuMois = Calendar.getInstance();
-        premierJourDuMois.set(annee, mois, 1);
-
-        nbJoursMois = premierJourDuMois.getActualMaximum(Calendar.DAY_OF_MONTH);
-        nbSecondesMois = nbJoursMois * NB_SECONDES_JOURNEE;
-
-        premierDimancheDuMois = trouverPremierDimancheDuMois();
-        
-        donnees = new byte[nbSecondesMois];
 
         visitesEnfants = new ArrayList<int[]>();
 
@@ -94,7 +86,7 @@ public final class TimeLineBuilder {
      * Indique pour quelle annee la time line doit etre construite.
      * 
      * @param annee
-     *            Année sur 4 chiffres.
+     *            Annï¿½e sur 4 chiffres.
      * @return Le builder courant.
      */
     public TimeLineBuilder forYear(int annee) {
@@ -131,9 +123,18 @@ public final class TimeLineBuilder {
     }
 
     /**
-     * Indique que le paramétrage statique est terminé.
+     * Indique que le parametrage statique est termine.
      */
     public void finParametrageStatique() {
+
+        premierJourDuMois.set(annee, mois - 1, 1);
+
+        nbJoursMois = premierJourDuMois.getActualMaximum(Calendar.DAY_OF_MONTH);
+        nbSecondesMois = nbJoursMois * NB_SECONDES_JOURNEE;
+
+        premierDimancheDuMois = trouverPremierDimancheDuMois();
+
+        donnees = new byte[nbSecondesMois];
 
         construireHeuresVisite();
     }
@@ -142,9 +143,9 @@ public final class TimeLineBuilder {
      * Ajoute une indisponibilite.
      * 
      * @param typeChocolat
-     *            Type de chocolat concerné.
+     *            Type de chocolat concernï¿½.
      * @param deltaDebut
-     *            Delta de début depuis le 01/11.
+     *            Delta de dï¿½but depuis le 01/11.
      * @param deltaFin
      *            Delta de fin depuis le 01/11.
      * @return Le builder courant.
@@ -244,7 +245,7 @@ public final class TimeLineBuilder {
 
                 boolean auMoinsUnChocolatIndisponible = false;
 
-                // On cherche quel chocolat est présent dans une donnee
+                // On cherche quel chocolat est prï¿½sent dans une donnee
                 // Pour rappel, une donnee == 1 seconde
                 for (int j = 0; j < ETATS_CHOCOLAT.length; j++) {
 
@@ -264,8 +265,7 @@ public final class TimeLineBuilder {
             // else : rien : pas ouvert aux enfants ou machine pas indisponible
         }
 
-        tl
-                .setTempsRuptureChocolatBlanc(tempsChaqueChocolat[ETAT_CHOCOLAT_BLANC]);
+        tl.setTempsRuptureChocolatBlanc(tempsChaqueChocolat[ETAT_CHOCOLAT_BLANC]);
         tl.setTempsRuptureChocolatNoir(tempsChaqueChocolat[ETAT_CHOCOLAT_NOIR]);
         tl.setTempsRuptureChocolatLait(tempsChaqueChocolat[ETAT_CHOCOLAT_LAIT]);
         tl.setTempsIndisponibiliteGlobale(tempsAuMoinsUnChocolat);
