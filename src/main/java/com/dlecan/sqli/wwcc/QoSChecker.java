@@ -43,7 +43,7 @@ public class QoSChecker {
     private static int NUM_MOIS_NOVEMBRE;
 
     /**
-     * Inclus le caractère de fin de ligne windows (\r\n)
+     * Inclus le caractere de fin de ligne windows (\r\n)
      */
     private static int NB_BYTES_PAR_LIGNE_NORMALE;
 
@@ -53,6 +53,10 @@ public class QoSChecker {
      * Duree de fonctionnement theorique (novembre), en secondes.
      */
     private static int DUREE_FONCTIONNEMENT_THEORIQUE;
+
+    private static int PREMIER_DIMANCHE_MOIS_11;
+
+    private static int NB_JOURS_SEMAINE;
 
     private byte[] donnees;
 
@@ -81,6 +85,8 @@ public class QoSChecker {
         NB_BYTES_PAR_LIGNE_NORMALE = 43;
         NB_BYTES_PAR_LIGNE_NORMALE_SS_FIN_LIGNE = NB_BYTES_PAR_LIGNE_NORMALE - 2;
         NUM_MOIS_NOVEMBRE = 11;
+        PREMIER_DIMANCHE_MOIS_11 = 6;
+        NB_JOURS_SEMAINE = 7;
 
         donnees = new byte[NB_SECONDES_MOIS_11];
     }
@@ -104,9 +110,20 @@ public class QoSChecker {
     private void construireHeuresVisite() {
         StopWatch stopWatch = new Slf4JStopWatch("construireHeuresVisite");
 
-        for (int i = 0; i < NB_JOURS_MOIS_11; i++) {
+        for (int numJourDuMois = 1; numJourDuMois <= NB_JOURS_MOIS_11; numJourDuMois++) {
 
-            remplirHeuresDeVisiteUneJournee(i);
+            // Pour savoir si un numero de jour donne est un dimanche,
+            // on ramene ce numero en base 7 (nb jours de la semaine) via modulo
+            // Ensuite, il suffit de comparer le resultat avec le numero du
+            // premier jour du mois qui porte le nom du jour que l'on cherche
+            // numJourDuMois est un dimanche sur novembre 2011 si :
+            // numJourDuMois % 7 == 6
+            // car 6 => numero du premier dimanche de novembre 2011
+
+            // Pas de visite le dimanche
+            if (numJourDuMois % NB_JOURS_SEMAINE != PREMIER_DIMANCHE_MOIS_11) {
+                remplirHeuresDeVisiteUneJournee(numJourDuMois);
+            }
 
         }
 
@@ -115,7 +132,8 @@ public class QoSChecker {
 
     private void remplirHeuresDeVisiteUneJournee(int numJournee) {
 
-        int offset = numJournee * NB_SECONDES_JOURNEE;
+        // -1 car le num du jour commence a 1 et non pas 0
+        int offset = (numJournee - 1) * NB_SECONDES_JOURNEE;
 
         // On indique les heures d'ouverture du matin pour cette journee
         Arrays.fill(donnees, offset + DEBUT_VISITE_MATIN, offset
@@ -207,13 +225,13 @@ public class QoSChecker {
 
                 if (byteBuffer.remaining() >= NB_BYTES_PAR_LIGNE_NORMALE) {
                     byteBuffer.get(buf);
-                    // Suppression du caractère 'retour ligne'
+                    // Suppression du caractere 'retour ligne'
                     byteBuffer.get();
                     byteBuffer.get();
                 } else if (byteBuffer.remaining() == NB_BYTES_PAR_LIGNE_NORMALE_SS_FIN_LIGNE) {
                     byteBuffer.get(buf);
                 } else {
-                    // Dernière ligne mal foutue
+                    // Derniere ligne mal foutue
                     break;
                 }
 
@@ -256,7 +274,7 @@ public class QoSChecker {
                                 deltaFin);
                     }
                     // else
-                    // on saute la ligne car incohérente (date de fin AVANT date
+                    // on saute la ligne car incoherente (date de fin AVANT date
                     // de debut) Ignoree donc
 
                 } else if (moisDebut == NUM_MOIS_NOVEMBRE

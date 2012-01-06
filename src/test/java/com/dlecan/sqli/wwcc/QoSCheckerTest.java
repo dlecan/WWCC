@@ -20,8 +20,17 @@ public class QoSCheckerTest {
     }
 
     @Test
+    public void test_wonka_data_2011() throws Exception {
+        Object[] resultats = new Object[] { 374400, 20662, 39088, 20485, 74888 };
+
+        runTest("wonka_data_2011", resultats);
+    }
+
+    @Test
     public void test_wonka_data_2011_v2() throws Exception {
-        runTest("wonka_data_2011_v2", null);
+        Object[] resultats = new Object[] { 374400, 20662, 39080, 20485, 74880 };
+
+        runTest("wonka_data_2011_v2", resultats);
     }
 
     @Test
@@ -60,7 +69,7 @@ public class QoSCheckerTest {
 
     @Test
     public void test_test5() throws Exception {
-        Object[] resultats = new Object[] { 374400, 36000, 21600, 36000, 86400 };
+        Object[] resultats = new Object[] { 374400, 36000, 21600, 21600, 72000 };
 
         runTest("test5", resultats);
     }
