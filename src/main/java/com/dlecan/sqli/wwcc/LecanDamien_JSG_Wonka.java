@@ -4,9 +4,6 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-import org.perf4j.StopWatch;
-import org.perf4j.slf4j.Slf4JStopWatch;
-
 /**
  * Classe de lancement.
  * 
@@ -18,7 +15,6 @@ public class LecanDamien_JSG_Wonka {
      * Main.
      */
     public static void main(String[] args) {
-        StopWatch stopWatch = new Slf4JStopWatch("main");
         long debut = System.currentTimeMillis();
 
         if (args != null && args.length > 0) {
@@ -68,8 +64,6 @@ public class LecanDamien_JSG_Wonka {
 
             System.out.println(sb.toString());
         }
-
-        stopWatch.stop();
 
         System.out.println("time = " + (System.currentTimeMillis() - debut)
                 + " millis");

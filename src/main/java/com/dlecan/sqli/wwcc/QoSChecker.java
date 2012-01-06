@@ -18,19 +18,12 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
 
-import org.perf4j.StopWatch;
-import org.perf4j.slf4j.Slf4JStopWatch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Classe principale.
  * 
  * @author dlecan
  */
 public class QoSChecker {
-
-    private static Logger LOGGER;
 
     private static int DEBUT_VISITE_MATIN;
 
@@ -68,8 +61,6 @@ public class QoSChecker {
     }
 
     private void init() {
-        LOGGER = LoggerFactory.getLogger(QoSChecker.class);
-
         // (5j (S1) + 3 * 6j (S2, S3, S4) + 3 (S5)) * 4h * 60min * 60s
         DUREE_FONCTIONNEMENT_THEORIQUE = (5 + 3 * 6 + 3) * 4 * 60 * 60;
         DEBUT_VISITE_MATIN = 10 * NB_SECONDES_HEURE;
@@ -86,24 +77,16 @@ public class QoSChecker {
     }
 
     public Object[] extractQoS(File qualityFile) {
-        StopWatch stopWatch = new Slf4JStopWatch("extractQoS");
-
-        LOGGER.debug("Temps de fonctionnement th\u00E9orique : {} secondes",
-                DUREE_FONCTIONNEMENT_THEORIQUE);
-
         construireHeuresVisite();
         extraireIntervals(qualityFile);
 
         Object[] resultats = mesureQoS();
         resultats[0] = DUREE_FONCTIONNEMENT_THEORIQUE;
 
-        stopWatch.stop();
         return resultats;
     }
 
     private void construireHeuresVisite() {
-        StopWatch stopWatch = new Slf4JStopWatch("construireHeuresVisite");
-
         for (int numJourDuMois = 1; numJourDuMois <= NB_JOURS_MOIS_11; numJourDuMois++) {
 
             // Pour savoir si un numero de jour donne est un dimanche,
@@ -120,8 +103,6 @@ public class QoSChecker {
             }
 
         }
-
-        stopWatch.stop();
     }
 
     private void remplirHeuresDeVisiteUneJournee(int numJournee) {
@@ -139,8 +120,6 @@ public class QoSChecker {
     }
 
     private Object[] mesureQoS() {
-        StopWatch stopWatch = new Slf4JStopWatch("mesureQoS");
-
         int[] tempsChaqueChocolat = new int[ETAT_CHOCOLAT_LAIT + 1];
 
         int i;
@@ -174,35 +153,21 @@ public class QoSChecker {
 
         }
 
-        if (LOGGER.isDebugEnabled()) {
-            for (i = 0; i < ETATS_CHOCOLAT.length; i++) {
-                LOGGER.debug("Temps de rupture de chocolat {} : {} secondes",
-                        new Object[] { Chocolat.fromEtat(ETATS_CHOCOLAT[i]),
-                                tempsChaqueChocolat[ETATS_CHOCOLAT[i]] });
-            }
-        }
         Object[] resultats = new Object[6];
         resultats[1] = tempsChaqueChocolat[ETAT_CHOCOLAT_BLANC];
         resultats[2] = tempsChaqueChocolat[ETAT_CHOCOLAT_NOIR];
         resultats[3] = tempsChaqueChocolat[ETAT_CHOCOLAT_LAIT];
-
-        LOGGER.debug("Temps d'indisponibilit\u00E9 globale : {} secondes",
-                tempsAuMoinsUnChocolat);
         resultats[4] = tempsAuMoinsUnChocolat;
 
         double qos = (double) (DUREE_FONCTIONNEMENT_THEORIQUE - tempsAuMoinsUnChocolat)
                 / DUREE_FONCTIONNEMENT_THEORIQUE;
 
-        LOGGER.debug("Qualit\u00E9 de Service novembre 2011 : {}", qos);
         resultats[5] = qos;
 
-        stopWatch.stop();
         return resultats;
     }
 
     private void extraireIntervals(File qualityFile) {
-        StopWatch stopWatch = new Slf4JStopWatch("extractIntervals");
-
         FileInputStream fileInputStream = null;
         FileChannel channel = null;
         try {
@@ -298,7 +263,6 @@ public class QoSChecker {
                 }
             }
         }
-        stopWatch.stop();
     }
 
     private void stockerIndisponibiliteChocolat(byte type, int deltaDebut,

@@ -1,14 +1,13 @@
 package com.dlecan.sqli.wwcc;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import org.perf4j.StopWatch;
-import org.perf4j.slf4j.Slf4JStopWatch;
 
 public class QoSCheckerTest {
 
@@ -76,13 +75,8 @@ public class QoSCheckerTest {
 
     private void runTest(String nomFichierTest, Object[] attendus)
             throws URISyntaxException {
-        StopWatch stopWatch = new Slf4JStopWatch("testExtractQoS_"
-                + nomFichierTest);
-
         Object[] resultats = qoSChecker.extractQoS(new File(getClass()
                 .getResource("/" + nomFichierTest + ".dat").toURI()));
-
-        stopWatch.stop();
 
         if (attendus != null) {
 
