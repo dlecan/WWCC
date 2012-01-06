@@ -63,4 +63,18 @@ public final class Utils {
         return result;
     }
 
+    /**
+     * Indique si un entier en contient au autre (au sens operation de bits).
+     * 
+     * @param ensemble
+     *            Ensemble ou la donnee peut se trouver.
+     * @param aVerifier
+     *            Donnee a chercher.
+     * @return <code>true</code> si la donnee est "incluse" dans l'ensemble.
+     *         <code>false</code> sinon.
+     */
+    public static boolean contient(int ensemble, int aVerifier) {
+        return (ensemble & aVerifier) == aVerifier;
+    }
+
 }

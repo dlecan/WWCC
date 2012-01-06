@@ -75,8 +75,9 @@ public class QoSCheckerTest {
 
     private void runTest(String nomFichierTest, Object[] attendus)
             throws URISyntaxException {
-        Object[] resultats = qoSChecker.extractQoS(new File(getClass()
-                .getResource("/" + nomFichierTest + ".dat").toURI()));
+        Object[] resultats = qoSChecker.extractQoS(
+                new File(getClass().getResource("/" + nomFichierTest + ".dat")
+                        .toURI())).toArray();
 
         if (attendus != null) {
 
