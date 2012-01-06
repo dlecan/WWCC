@@ -33,9 +33,9 @@ public class QoSChecker {
 
     public TimeLine extractQoS(File qualityFile) {
         TimeLineBuilder builder = new TimeLineBuilder();
-        
+
         builder.forMonth(NUM_MOIS_NOVEMBRE);
-        
+
         // Ajout des visites d'enfants
         // Pour le moment, ne fait rien (donnees en "dur" dans le buidler), mais
         // c'est pour l'exemple d'usage de l'API.
@@ -43,7 +43,7 @@ public class QoSChecker {
         builder.withVisiteEnfant(14, 00, 16, 00);
 
         builder.finParametrageStatique();
-        
+
         ajouterIndisponibilites(qualityFile, builder);
 
         return builder.build();
@@ -65,6 +65,10 @@ public class QoSChecker {
 
             while (byteBuffer.hasRemaining()) {
 
+                // Les 3 tests qui suivent correspondent aux cas suivants :
+                // 1/ ligne normale, avec caracteres de fin de ligne
+                // 2/ ligne de fin de fichier, sans caracteres de ligne
+                // 3/ ligne qui ne contient, a priori, rien d'interessant
                 if (byteBuffer.remaining() >= NB_BYTES_PAR_LIGNE_NORMALE) {
                     byteBuffer.get(buf);
                     // Suppression du caractere 'retour ligne'
@@ -73,7 +77,7 @@ public class QoSChecker {
                 } else if (byteBuffer.remaining() == NB_BYTES_PAR_LIGNE_NORMALE_SS_FIN_LIGNE) {
                     byteBuffer.get(buf);
                 } else {
-                    // Derniere ligne mal foutue
+                    // Derniere ligne, mal foutue, on quitte.
                     break;
                 }
 
@@ -91,34 +95,23 @@ public class QoSChecker {
                 if (moisDebut == NUM_MOIS_NOVEMBRE
                         && moisFin == NUM_MOIS_NOVEMBRE) {
 
-                    int jourDebut = toInt(buf, 0, 1);
-                    int heureDebut = toInt(buf, 11, 12);
-                    int minutesDebut = toInt(buf, 14, 15);
-                    int secondesDebut = toInt(buf, 17, 18);
-
-                    int deltaDebut = Utils.getDelta(jourDebut, heureDebut,
-                            minutesDebut, secondesDebut);
-
-                    int jourFin = toInt(buf, 20, 21);
-                    int heureFin = toInt(buf, 31, 32);
-                    int minutesFin = toInt(buf, 34, 35);
-                    int secondesFin = toInt(buf, 37, 38);
-
-                    int deltaFin = Utils.getDelta(jourFin, heureFin,
-                            minutesFin, secondesFin);
+                    int deltaDebut = getDeltaDebut(buf);
+                    int deltaFin = getDeltaFin(buf);
 
                     if (deltaFin >= deltaDebut) {
 
                         // Extraction du type de chocolat
                         byte type = buf[40];
 
+                        // Ajout de l'intervalle d'indisponbilite
                         builder
                                 .withIntervalIndispoDepuisDebutDuMoisPourChocolatDonne(
                                         type, deltaDebut, deltaFin);
                     }
                     // else
                     // on saute la ligne car incoherente (date de fin AVANT date
-                    // de debut) Ignoree donc
+                    // de debut)
+                    // Ignoree donc
 
                 } else if (moisDebut == NUM_MOIS_NOVEMBRE
                         || moisFin == NUM_MOIS_NOVEMBRE) {
@@ -145,5 +138,24 @@ public class QoSChecker {
                 }
             }
         }
+    }
+
+    private int getDeltaFin(final byte[] buf) {
+        int jourFin = toInt(buf, 20, 21);
+        int heureFin = toInt(buf, 31, 32);
+        int minutesFin = toInt(buf, 34, 35);
+        int secondesFin = toInt(buf, 37, 38);
+
+        return Utils.getDelta(jourFin, heureFin, minutesFin, secondesFin);
+    }
+
+    private int getDeltaDebut(final byte[] buf) {
+        int jourDebut = toInt(buf, 0, 1);
+        int heureDebut = toInt(buf, 11, 12);
+        int minutesDebut = toInt(buf, 14, 15);
+        int secondesDebut = toInt(buf, 17, 18);
+
+        return Utils.getDelta(jourDebut, heureDebut, minutesDebut,
+                secondesDebut);
     }
 }
