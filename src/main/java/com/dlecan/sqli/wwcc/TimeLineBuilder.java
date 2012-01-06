@@ -86,7 +86,7 @@ public final class TimeLineBuilder {
      * Indique pour quelle annee la time line doit etre construite.
      * 
      * @param annee
-     *            Ann�e sur 4 chiffres.
+     *            Annee sur 4 chiffres.
      * @return Le builder courant.
      */
     public TimeLineBuilder forYear(int annee) {
@@ -136,16 +136,16 @@ public final class TimeLineBuilder {
 
         donnees = new byte[nbSecondesMois];
 
-        construireHeuresVisite();
+        construireHeuresVisiteCalculerEtDureeFonctionnementTheorique();
     }
 
     /**
      * Ajoute une indisponibilite.
      * 
      * @param typeChocolat
-     *            Type de chocolat concern�.
+     *            Type de chocolat concerne.
      * @param deltaDebut
-     *            Delta de d�but depuis le 01/11.
+     *            Delta de debut depuis le 01/11.
      * @param deltaFin
      *            Delta de fin depuis le 01/11.
      * @return Le builder courant.
@@ -166,7 +166,6 @@ public final class TimeLineBuilder {
      * @return La {@link TimeLine}.
      */
     public TimeLine build() {
-        calculerDureeFonctionnementTheorique();
         calculerToutesLesDonnees();
 
         return tl;
@@ -186,15 +185,7 @@ public final class TimeLineBuilder {
         return premierDimancheDuMois;
     }
 
-    private void calculerDureeFonctionnementTheorique() {
-
-        // (5j (S1) + 3 * 6j (S2, S3, S4) + 3 (S5)) * 4h * 60min * 60s
-        dureeFonctionnementTheorique = (5 + 3 * 6 + 3) * 4 * 60 * 60;
-
-        tl.setTempsFonctionnementTheorique(dureeFonctionnementTheorique);
-    }
-
-    private void construireHeuresVisite() {
+    private void construireHeuresVisiteCalculerEtDureeFonctionnementTheorique() {
         for (int numJourDuMois = 1; numJourDuMois <= nbJoursMois; numJourDuMois++) {
 
             // Pour savoir si un numero de jour donne est un dimanche,
@@ -207,16 +198,22 @@ public final class TimeLineBuilder {
 
             // Pas de visite le dimanche
             if (numJourDuMois % NB_JOURS_SEMAINE != premierDimancheDuMois) {
-                remplirHeuresDeVisiteUneJournee(numJourDuMois);
+                int dureeTotaleVisiteUneJournee = remplirHeuresDeVisiteUneJournee(numJourDuMois);
+
+                dureeFonctionnementTheorique += dureeTotaleVisiteUneJournee;
             }
         }
+
+        tl.setTempsFonctionnementTheorique(dureeFonctionnementTheorique);
     }
 
-    private void remplirHeuresDeVisiteUneJournee(int numJournee) {
+    private int remplirHeuresDeVisiteUneJournee(int numJournee) {
 
         // -1 car le num du jour commence a 1 et dans notre tableau de "donnees"
         // tout est indexe depuis 0
         int offset = (numJournee - 1) * NB_SECONDES_JOURNEE;
+
+        int dureeTotaleVisite = 0;
 
         // On indique les heures de visite des endants pour cette journee
         for (int[] visite : visitesEnfants) {
@@ -224,9 +221,12 @@ public final class TimeLineBuilder {
             int debutVisite = visite[0] * NB_SECONDES_HEURE + visite[1];
             int finVisite = visite[2] * NB_SECONDES_HEURE + visite[3];
 
+            dureeTotaleVisite += finVisite - debutVisite;
+
             Arrays.fill(donnees, offset + debutVisite, offset + finVisite,
                     ETAT_OUVERT_AUX_VISITES);
         }
+        return dureeTotaleVisite;
     }
 
     private void calculerToutesLesDonnees() {
@@ -245,7 +245,7 @@ public final class TimeLineBuilder {
 
                 boolean auMoinsUnChocolatIndisponible = false;
 
-                // On cherche quel chocolat est pr�sent dans une donnee
+                // On cherche quel chocolat est present dans une donnee
                 // Pour rappel, une donnee == 1 seconde
                 for (int j = 0; j < ETATS_CHOCOLAT.length; j++) {
 
