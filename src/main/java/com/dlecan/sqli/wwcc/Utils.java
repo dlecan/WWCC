@@ -1,6 +1,10 @@
 package com.dlecan.sqli.wwcc;
 
-
+/**
+ * Classe d'utilitaires.
+ * 
+ * @author dlecan
+ */
 public final class Utils {
 
     public static final int NB_SECONDES_MINUTE = 60;
@@ -14,12 +18,22 @@ public final class Utils {
     public static final int NB_SECONDES_MOIS_11 = NB_JOURS_MOIS_11
             * NB_SECONDES_JOURNEE;
 
+    private Utils() {
+        // Rien
+    }
+
     /**
      * Calcul le delta en secondes entre la date passee en parametre et le 1er
      * novembre 2011.
      * 
-     * @param date
-     *            Date a parser.
+     * @param jour
+     *            Numero du jour dans le mois.
+     * @param heure
+     *            Heure
+     * @param minutes
+     *            Minutes
+     * @param secondes
+     *            Secondes
      * @return Delta calcule, en secondes depuis le 01/11.
      */
     public static int getDelta(int jour, int heure, int minutes, int secondes) {
