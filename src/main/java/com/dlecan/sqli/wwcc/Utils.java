@@ -1,5 +1,6 @@
 package com.dlecan.sqli.wwcc;
 
+
 /**
  * Classe d'utilitaires.
  * 
@@ -17,6 +18,9 @@ public final class Utils {
 
     public static final int NB_SECONDES_MOIS_11 = NB_JOURS_MOIS_11
             * NB_SECONDES_JOURNEE;
+
+    private static final int[] PUISSANCES_10 = { 1, 10, 100, 1000, 10000,
+            100000, 1000000 };
 
     private Utils() {
         // Rien
@@ -39,10 +43,8 @@ public final class Utils {
     public static int getDelta(int jour, int heure, int minutes, int secondes) {
 
         int delta = (jour - 1) * NB_SECONDES_JOURNEE // -1 sur le nombre de
-                // jours car les jours
-                // sont indexés de 0 à
-                // 29 (pour 30j dans le
-                // mois de novembre)
+                // jours car les jours sont indexes de 0 a
+                // 29 (pour 30j dans le mois de novembre)
                 + heure * NB_SECONDES_HEURE //
                 + minutes * NB_SECONDES_MINUTE //
                 + secondes;
@@ -51,15 +53,13 @@ public final class Utils {
     }
 
     public static int toInt(byte[] bytes, int from, int offset) {
-        // TODO : Faire ces calculs en binaire si besoin
-        // car plus rapide
         int result = 0;
         for (int i = from; i <= offset; i++) {
             int chiffre = Character.digit(bytes[i], 10);
 
             // En fonction de sa place dans le nombre final, on reconstitue les
             // puissances de 10.
-            result += chiffre * Math.pow(10, offset - i);
+            result += chiffre * PUISSANCES_10[offset - i];
         }
         return result;
     }
