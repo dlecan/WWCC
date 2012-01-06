@@ -7,10 +7,15 @@ import java.text.NumberFormat;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
 
+/**
+ * Classe de lancement.
+ * 
+ * @author dlecan
+ */
 public class LecanDamien_JSG_Wonka {
 
     /**
-     * @param args
+     * Main.
      */
     public static void main(String[] args) {
         StopWatch stopWatch = new Slf4JStopWatch("main");

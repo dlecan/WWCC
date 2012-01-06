@@ -1,6 +1,5 @@
 package com.dlecan.sqli.wwcc;
 
-
 /**
  * Classe d'utilitaires.
  * 

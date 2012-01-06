@@ -1,5 +1,10 @@
 package com.dlecan.sqli.wwcc;
 
+/**
+ * Le constructeur de {@link TimeLine}.
+ * 
+ * @author dlecan
+ */
 public final class TimeLineBuilder {
 
     /**

@@ -23,6 +23,11 @@ import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Classe principale.
+ * 
+ * @author dlecan
+ */
 public class QoSChecker {
 
     private static Logger LOGGER;

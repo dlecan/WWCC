@@ -13,7 +13,7 @@ import static com.dlecan.sqli.wwcc.Etat.ETAT_CHOCOLAT_NOIR;
  * Pourrait etre une enum, mais c'est trop lent.
  * </p>
  * 
- * @author inulecd
+ * @author dlecan
  * 
  */
 public final class Chocolat {
