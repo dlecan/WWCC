@@ -104,9 +104,8 @@ public class QoSChecker {
                         byte type = buf[40];
 
                         // Ajout de l'intervalle d'indisponbilite
-                        builder
-                                .withIntervalIndispoDepuisDebutDuMoisPourChocolatDonne(
-                                        type, deltaDebut, deltaFin);
+                        builder.withIndispoDepuisDebutDuMoisPourChocolatDonne(
+                                type, deltaDebut, deltaFin);
                     }
                     // else
                     // on saute la ligne car incoherente (date de fin AVANT date

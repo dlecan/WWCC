@@ -39,7 +39,7 @@ public final class TimeLineBuilder {
 
     private byte[] donnees;
 
-    private TimeLine timeLine;
+    private TimeLine tl;
 
     /**
      * Constructeur.
@@ -81,6 +81,8 @@ public final class TimeLineBuilder {
     public TimeLineBuilder withVisiteEnfant(int heureDebut, int minuteDebut,
             int heureFin, int minuteFin) {
 
+        // Rien dans cette implementation, en dur.
+
         return this;
     }
 
@@ -103,7 +105,7 @@ public final class TimeLineBuilder {
      *            Delta de fin depuis le 01/11.
      * @return Le builder courant.
      */
-    public TimeLineBuilder withIntervalIndispoDepuisDebutDuMoisPourChocolatDonne(
+    public TimeLineBuilder withIndispoDepuisDebutDuMoisPourChocolatDonne(
             byte typeChocolat, int deltaDebut, int deltaFin) {
 
         stockerIndisponibiliteChocolat(typeChocolat, deltaDebut, deltaFin);
@@ -121,7 +123,7 @@ public final class TimeLineBuilder {
 
         calculerToutesLesDonnees();
 
-        return timeLine;
+        return tl;
     }
 
     private void init() {
@@ -136,10 +138,9 @@ public final class TimeLineBuilder {
 
         donnees = new byte[NB_SECONDES_MOIS_11];
 
-        timeLine = new TimeLine();
+        tl = new TimeLine();
 
-        timeLine
-                .setTempsFonctionnementTheorique(DUREE_FONCTIONNEMENT_THEORIQUE);
+        tl.setTempsFonctionnementTheorique(DUREE_FONCTIONNEMENT_THEORIQUE);
     }
 
     private void construireHeuresVisite() {
@@ -209,18 +210,16 @@ public final class TimeLineBuilder {
 
         }
 
-        timeLine
+        tl
                 .setTempsRuptureChocolatBlanc(tempsChaqueChocolat[ETAT_CHOCOLAT_BLANC]);
-        timeLine
-                .setTempsRuptureChocolatNoir(tempsChaqueChocolat[ETAT_CHOCOLAT_NOIR]);
-        timeLine
-                .setTempsRuptureChocolatLait(tempsChaqueChocolat[ETAT_CHOCOLAT_LAIT]);
-        timeLine.setTempsIndisponibiliteGlobale(tempsAuMoinsUnChocolat);
+        tl.setTempsRuptureChocolatNoir(tempsChaqueChocolat[ETAT_CHOCOLAT_NOIR]);
+        tl.setTempsRuptureChocolatLait(tempsChaqueChocolat[ETAT_CHOCOLAT_LAIT]);
+        tl.setTempsIndisponibiliteGlobale(tempsAuMoinsUnChocolat);
 
         double qos = (double) (DUREE_FONCTIONNEMENT_THEORIQUE - tempsAuMoinsUnChocolat)
                 / DUREE_FONCTIONNEMENT_THEORIQUE;
 
-        timeLine.setQos(qos);
+        tl.setQos(qos);
     }
 
     private void stockerIndisponibiliteChocolat(byte type, int deltaDebut,
@@ -234,6 +233,8 @@ public final class TimeLineBuilder {
 
             byte donnee = donnees[i];
 
+            // Ici on "ajoute" la donnee si elle n'y est pas, ne fait rien si
+            // elle y est deja (gere par le |).
             donnee |= aAjouter;
 
             donnees[i] = donnee;
