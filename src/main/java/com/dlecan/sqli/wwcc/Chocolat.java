@@ -3,81 +3,84 @@
  */
 package com.dlecan.sqli.wwcc;
 
-import java.util.Map;
-
-import com.google.common.collect.Maps;
+import static com.dlecan.sqli.wwcc.QoSChecker.ETAT_CHOCOLAT_BLANC;
+import static com.dlecan.sqli.wwcc.QoSChecker.ETAT_CHOCOLAT_LAIT;
+import static com.dlecan.sqli.wwcc.QoSChecker.ETAT_CHOCOLAT_NOIR;
 
 /**
- * Les types de chocolats fabriquï¿½s.
+ * Les types de chocolats fabriques.
  * 
  * @author inulecd
  * 
  */
-public enum Chocolat {
+public final class Chocolat {
 
-    BLANC((byte) '1', "blanc", QoSChecker.ETAT_CHOCOLAT_BLANC),
+    private static final byte TYPE_CHOCOLAT_BLANC = (byte) '1';
 
-    NOIR((byte) '2', "noir", QoSChecker.ETAT_CHOCOLAT_NOIR),
+    private static final byte TYPE_CHOCOLAT_NOIR = (byte) '2';
 
-    LAIT((byte) '3', "au lait", QoSChecker.ETAT_CHOCOLAT_LAIT);
+    private static final byte TYPE_CHOCOLAT_LAIT = (byte) '3';
 
-    private static final Map<Byte, Chocolat> ASSOC_TYPE = Maps.newHashMap();
-
-    static {
-        for (Chocolat c : Chocolat.values()) {
-            ASSOC_TYPE.put(c.type, c);
-        }
-    }
-
-    private static final Map<Byte, Chocolat> ASSOC_ETAT = Maps.newHashMap();
-
-    static {
-        for (Chocolat c : Chocolat.values()) {
-            ASSOC_ETAT.put(c.etat, c);
-        }
-    }
-
-    private final byte type;
-
-    private final String nom;
-
-    private final byte etat;
-
-    private Chocolat(byte type, String nom, byte etat) {
-        this.type = type;
-        this.nom = nom;
-        this.etat = etat;
+    private Chocolat() {
+        // Rien
     }
 
     /**
-     * Rï¿½cupï¿½re l'instance de {@link Chocolat} ï¿½ partir de son type.
+     * Recupere l'etat du chocolat a partir de son type.
      * 
      * @param type
-     *            Type : 1, 2 ou 3.
-     * @return <code>null</code> Si type diffï¿½rent de 1, 2 ou 3.
+     *            Type : 1, 2 ou 3, codé en octet.
+     * @return L'état correspondant.
      */
-    public static Chocolat fromType(byte type) {
-        return ASSOC_TYPE.get(type);
+    public static byte fromType(byte type) {
+        byte retour;
+
+        switch (type) {
+
+        case TYPE_CHOCOLAT_BLANC:
+            retour = ETAT_CHOCOLAT_BLANC;
+            break;
+
+        case TYPE_CHOCOLAT_NOIR:
+            retour = ETAT_CHOCOLAT_NOIR;
+            break;
+
+        case TYPE_CHOCOLAT_LAIT:
+        default:
+            retour = ETAT_CHOCOLAT_LAIT;
+            break;
+
+        }
+        return retour;
     }
 
     /**
-     * Rï¿½cupï¿½re l'instance de {@link Chocolat} ï¿½ partir de son Ã©tat.
+     * Recupere le type de chocolat a partir de son etat.
      * 
-     * @param type
-     *            L'Ã©tat.
-     * @return <code>null</code> Si type inconnu.
+     * @param etat
+     *            L'etat.
+     * @return Le type correspondant (attention, codé en octet).
      */
-    public static Chocolat fromEtat(byte etat) {
-        return ASSOC_ETAT.get(etat);
-    }
+    public static byte fromEtat(byte etat) {
+        byte retour;
 
-    @Override
-    public String toString() {
-        return nom;
-    }
+        switch (etat) {
 
-    public byte getEtat() {
-        return etat;
+        case ETAT_CHOCOLAT_BLANC:
+            retour = TYPE_CHOCOLAT_BLANC;
+            break;
+
+        case ETAT_CHOCOLAT_NOIR:
+            retour = TYPE_CHOCOLAT_NOIR;
+            break;
+
+        case ETAT_CHOCOLAT_LAIT:
+        default:
+            retour = TYPE_CHOCOLAT_LAIT;
+            break;
+
+        }
+        return retour;
     }
 
 }

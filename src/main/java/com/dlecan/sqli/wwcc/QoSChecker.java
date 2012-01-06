@@ -22,13 +22,13 @@ public class QoSChecker {
 
     private static Logger LOGGER;
 
-    private static byte ETAT_OUVERT_AUX_VISITES;
+    private static final byte ETAT_OUVERT_AUX_VISITES = 1 << 0; // 1
 
-    public static byte ETAT_CHOCOLAT_BLANC;
+    public static final byte ETAT_CHOCOLAT_BLANC = 1 << 1; // 2
 
-    public static byte ETAT_CHOCOLAT_NOIR;
+    public static final byte ETAT_CHOCOLAT_NOIR = 1 << 2; // 4
 
-    public static byte ETAT_CHOCOLAT_LAIT;
+    public static final byte ETAT_CHOCOLAT_LAIT = 1 << 3; // 8
 
     private static byte[] ETATS_CHOCOLAT;
 
@@ -72,10 +72,6 @@ public class QoSChecker {
 
         // (5j (S1) + 3 * 6j (S2, S3, S4) + 3 (S5)) * 4h * 60min * 60s
         DUREE_FONCTIONNEMENT_THEORIQUE = (5 + 3 * 6 + 3) * 4 * 60 * 60;
-        ETAT_OUVERT_AUX_VISITES = 1 << 0; // 1
-        ETAT_CHOCOLAT_BLANC = 1 << 1; // 2
-        ETAT_CHOCOLAT_NOIR = 1 << 2; // 4
-        ETAT_CHOCOLAT_LAIT = 1 << 3; // 8
         ETATS_CHOCOLAT = new byte[] { ETAT_CHOCOLAT_BLANC, ETAT_CHOCOLAT_NOIR,
                 ETAT_CHOCOLAT_LAIT };
         DEBUT_VISITE_MATIN = 10 * NB_SECONDES_HEURE;
@@ -310,7 +306,7 @@ public class QoSChecker {
     private void stockerIndisponibiliteChocolat(byte type, int deltaDebut,
             int deltaFin) {
 
-        byte etatChocolat = typeChocolatToEtat(type);
+        byte etatChocolat = Chocolat.fromType(type);
         byte aAjouter = etatChocolat;
 
         int i;
@@ -323,10 +319,6 @@ public class QoSChecker {
             donnees[i] = donnee;
         }
 
-    }
-
-    private byte typeChocolatToEtat(byte typeChocolat) {
-        return Chocolat.fromType(typeChocolat).getEtat();
     }
 
     private boolean contient(int ensemble, int aVerifier) {
