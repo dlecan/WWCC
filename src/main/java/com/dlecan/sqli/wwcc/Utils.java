@@ -55,8 +55,11 @@ public final class Utils {
         // car plus rapide
         int result = 0;
         for (int i = from; i <= offset; i++) {
-            result += (Character.digit(bytes[i], 10))
-                    * Math.pow(10, offset - i);
+            int chiffre = Character.digit(bytes[i], 10);
+
+            // En fonction de sa place dans le nombre final, on reconstitue les
+            // puissances de 10.
+            result += chiffre * Math.pow(10, offset - i);
         }
         return result;
     }
