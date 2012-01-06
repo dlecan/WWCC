@@ -53,7 +53,7 @@ public class QoSCheckerTest {
 
     @Test
     public void test_test4() throws Exception {
-        Object[] resultats = new Object[] { 374400, 7200, 0, 0, 7200 };
+        Object[] resultats = new Object[] { 374400, 7200, 7200, 7200, 7200 };
 
         runTest("test4", resultats);
     }
