@@ -1,5 +1,10 @@
 package com.dlecan.sqli.wwcc;
 
+import static com.dlecan.sqli.wwcc.Etat.ETATS_CHOCOLAT;
+import static com.dlecan.sqli.wwcc.Etat.ETAT_CHOCOLAT_BLANC;
+import static com.dlecan.sqli.wwcc.Etat.ETAT_CHOCOLAT_LAIT;
+import static com.dlecan.sqli.wwcc.Etat.ETAT_CHOCOLAT_NOIR;
+import static com.dlecan.sqli.wwcc.Etat.ETAT_OUVERT_AUX_VISITES;
 import static com.dlecan.sqli.wwcc.Utils.NB_JOURS_MOIS_11;
 import static com.dlecan.sqli.wwcc.Utils.NB_SECONDES_HEURE;
 import static com.dlecan.sqli.wwcc.Utils.NB_SECONDES_JOURNEE;
@@ -21,16 +26,6 @@ import org.slf4j.LoggerFactory;
 public class QoSChecker {
 
     private static Logger LOGGER;
-
-    private static final byte ETAT_OUVERT_AUX_VISITES = 1 << 0; // 1
-
-    public static final byte ETAT_CHOCOLAT_BLANC = 1 << 1; // 2
-
-    public static final byte ETAT_CHOCOLAT_NOIR = 1 << 2; // 4
-
-    public static final byte ETAT_CHOCOLAT_LAIT = 1 << 3; // 8
-
-    private static byte[] ETATS_CHOCOLAT;
 
     private static int DEBUT_VISITE_MATIN;
 
@@ -72,8 +67,6 @@ public class QoSChecker {
 
         // (5j (S1) + 3 * 6j (S2, S3, S4) + 3 (S5)) * 4h * 60min * 60s
         DUREE_FONCTIONNEMENT_THEORIQUE = (5 + 3 * 6 + 3) * 4 * 60 * 60;
-        ETATS_CHOCOLAT = new byte[] { ETAT_CHOCOLAT_BLANC, ETAT_CHOCOLAT_NOIR,
-                ETAT_CHOCOLAT_LAIT };
         DEBUT_VISITE_MATIN = 10 * NB_SECONDES_HEURE;
         FIN_VISITE_MATIN = 12 * NB_SECONDES_HEURE;
         DEBUT_VISITE_APRES_MIDI = 14 * NB_SECONDES_HEURE;

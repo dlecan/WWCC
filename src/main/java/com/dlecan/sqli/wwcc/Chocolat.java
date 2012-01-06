@@ -3,12 +3,15 @@
  */
 package com.dlecan.sqli.wwcc;
 
-import static com.dlecan.sqli.wwcc.QoSChecker.ETAT_CHOCOLAT_BLANC;
-import static com.dlecan.sqli.wwcc.QoSChecker.ETAT_CHOCOLAT_LAIT;
-import static com.dlecan.sqli.wwcc.QoSChecker.ETAT_CHOCOLAT_NOIR;
+import static com.dlecan.sqli.wwcc.Etat.ETAT_CHOCOLAT_BLANC;
+import static com.dlecan.sqli.wwcc.Etat.ETAT_CHOCOLAT_LAIT;
+import static com.dlecan.sqli.wwcc.Etat.ETAT_CHOCOLAT_NOIR;
 
 /**
  * Les types de chocolats fabriques.
+ * <p>
+ * Pourrait etre une enum, mais c'est trop lent.
+ * </p>
  * 
  * @author inulecd
  * 
