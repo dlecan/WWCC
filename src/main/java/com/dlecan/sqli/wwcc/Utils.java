@@ -7,16 +7,11 @@ package com.dlecan.sqli.wwcc;
  */
 public final class Utils {
 
-    public static final int NB_SECONDES_MINUTE = 60;
+    private static final int NB_SECONDES_MINUTE = 60;
 
     public static final int NB_SECONDES_HEURE = 60 * NB_SECONDES_MINUTE;
 
     public static final int NB_SECONDES_JOURNEE = 24 * NB_SECONDES_HEURE;
-
-    public static final int NB_JOURS_MOIS_11 = 30;
-
-    public static final int NB_SECONDES_MOIS_11 = NB_JOURS_MOIS_11
-            * NB_SECONDES_JOURNEE;
 
     private static final int[] PUISSANCES_10 = { 1, 10, 100, 1000, 10000,
             100000, 1000000 };

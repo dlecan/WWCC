@@ -20,7 +20,7 @@ public class LecanDamien_JSG_Wonka {
         if (args != null && args.length > 0) {
 
             QoSChecker qoSChecker = new QoSChecker();
-            TimeLine tl = qoSChecker.extractQoS(new File(args[0]));
+            TimeLine tl = qoSChecker.extractQoS(new File(args[0]), 2011, 11);
 
             StringBuilder sb = new StringBuilder();
 

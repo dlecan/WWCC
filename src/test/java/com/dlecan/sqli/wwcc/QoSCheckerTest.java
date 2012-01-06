@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -77,12 +76,13 @@ public class QoSCheckerTest {
             throws URISyntaxException {
         Object[] resultats = qoSChecker.extractQoS(
                 new File(getClass().getResource("/" + nomFichierTest + ".dat")
-                        .toURI())).toArray();
+                        .toURI()), 2011, 11).toArray();
 
         if (attendus != null) {
 
             // Supression de la qualité de service pour certains tests.
-            Object[] resultatsModifies = Arrays.copyOf(resultats,
+            Object[] resultatsModifies = new Object[attendus.length];
+            System.arraycopy(resultats, 0, resultatsModifies, 0,
                     attendus.length);
 
             assertEquals(attendus, resultatsModifies);

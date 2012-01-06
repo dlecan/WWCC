@@ -5,64 +5,107 @@ import static com.dlecan.sqli.wwcc.Etat.ETAT_CHOCOLAT_BLANC;
 import static com.dlecan.sqli.wwcc.Etat.ETAT_CHOCOLAT_LAIT;
 import static com.dlecan.sqli.wwcc.Etat.ETAT_CHOCOLAT_NOIR;
 import static com.dlecan.sqli.wwcc.Etat.ETAT_OUVERT_AUX_VISITES;
-import static com.dlecan.sqli.wwcc.Utils.NB_JOURS_MOIS_11;
 import static com.dlecan.sqli.wwcc.Utils.NB_SECONDES_HEURE;
 import static com.dlecan.sqli.wwcc.Utils.NB_SECONDES_JOURNEE;
-import static com.dlecan.sqli.wwcc.Utils.NB_SECONDES_MOIS_11;
 import static com.dlecan.sqli.wwcc.Utils.contient;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * Le constructeur de {@link TimeLine}.
+ * <p>
+ * Le builder stocke un gros tableau (<code>donnees</code>), dont chaque
+ * cellule représente 1 seconde du mois dont on veut analyser la QoS.
+ * </p>
+ * <p>
+ * Chaque cellule (1 sconde donc) contient plusieurs informations, stockée sous
+ * forme d'octet :
+ * </p>
+ * <ul>
+ * <li>0 : valeur par défaut : ni indispo chocolat, ni visite d'enfant,</li>
+ * <li>n : combiné sous forme d'octet visite ou indispo d'un ou plusieurs
+ * chocolat.</li>
+ * </ul>
  * 
  * @author dlecan
  */
 public final class TimeLineBuilder {
 
-    private static int DEBUT_VISITE_MATIN;
+    private static final int NB_JOURS_SEMAINE = 7;
 
-    private static int FIN_VISITE_MATIN;
-
-    private static int DEBUT_VISITE_APRES_MIDI;
-
-    private static int FIN_VISITE_APRES_MIDI;
+    private int premierDimancheDuMois;
 
     /**
-     * Duree de fonctionnement theorique (novembre), en secondes.
+     * Duree de fonctionnement theorique en secondes.
      */
-    private static int DUREE_FONCTIONNEMENT_THEORIQUE;
-
-    private static int PREMIER_DIMANCHE_MOIS_11;
-
-    private static int NB_JOURS_SEMAINE;
+    private int dureeFonctionnementTheorique;
 
     private byte[] donnees;
 
     private TimeLine tl;
 
+    private Calendar premierJourDuMois;
+
+    private int mois;
+
+    private int nbSecondesMois;
+
+    private int nbJoursMois;
+
+    private int annee;
+
+    private List<int[]> visitesEnfants;
+
     /**
      * Constructeur.
      */
     public TimeLineBuilder() {
-        init();
+        premierDimancheDuMois = trouverPremierDimancheDuMois();
+
+        premierJourDuMois = Calendar.getInstance();
+        premierJourDuMois.set(annee, mois, 1);
+
+        nbJoursMois = premierJourDuMois.getActualMaximum(Calendar.DAY_OF_MONTH);
+        nbSecondesMois = nbJoursMois * NB_SECONDES_JOURNEE;
+
+        donnees = new byte[nbSecondesMois];
+
+        visitesEnfants = new ArrayList<int[]>();
+
+        tl = new TimeLine();
     }
 
     /**
      * Indique pour quel mois la time line doit etre construite.
      * 
-     * @param month
+     * @param mois
      *            Numero standard du mois (1 = janvier, 12 = decembre).
      * @return Le builder courant.
      */
-    public TimeLineBuilder forMonth(int month) {
+    public TimeLineBuilder forMonth(int mois) {
+        this.mois = mois;
+        return this;
+    }
+
+    /**
+     * Indique pour quelle annee la time line doit etre construite.
+     * 
+     * @param annee
+     *            Année sur 4 chiffres.
+     * @return Le builder courant.
+     */
+    public TimeLineBuilder forYear(int annee) {
+        this.annee = annee;
         return this;
     }
 
     /**
      * Ajoute une visite d'enfant : heure de debut et heure de fin.
      * <p>
-     * Ajoute une visite tous les jours sauf le dimanche.
+     * Valable tous les jours sauf le dimanche.
      * </p>
      * <p>
      * A vous de decouper les heures en nombre d'heures et nombre de minutes.
@@ -81,7 +124,8 @@ public final class TimeLineBuilder {
     public TimeLineBuilder withVisiteEnfant(int heureDebut, int minuteDebut,
             int heureFin, int minuteFin) {
 
-        // Rien dans cette implementation, en dur.
+        visitesEnfants.add(new int[] { heureDebut, minuteDebut, heureFin,
+                minuteFin });
 
         return this;
     }
@@ -108,7 +152,8 @@ public final class TimeLineBuilder {
     public TimeLineBuilder withIndispoDepuisDebutDuMoisPourChocolatDonne(
             byte typeChocolat, int deltaDebut, int deltaFin) {
 
-        stockerIndisponibiliteChocolat(typeChocolat, deltaDebut, deltaFin);
+        stockerIndisponibiliteChocolatPourUnIntervalle(typeChocolat,
+                deltaDebut, deltaFin);
 
         return this;
     }
@@ -120,31 +165,26 @@ public final class TimeLineBuilder {
      * @return La {@link TimeLine}.
      */
     public TimeLine build() {
-
+        calculerDureeFonctionnementTheorique();
         calculerToutesLesDonnees();
 
         return tl;
     }
 
-    private void init() {
+    private int trouverPremierDimancheDuMois() {
+        return 6;
+    }
+
+    private void calculerDureeFonctionnementTheorique() {
+
         // (5j (S1) + 3 * 6j (S2, S3, S4) + 3 (S5)) * 4h * 60min * 60s
-        DUREE_FONCTIONNEMENT_THEORIQUE = (5 + 3 * 6 + 3) * 4 * 60 * 60;
-        DEBUT_VISITE_MATIN = 10 * NB_SECONDES_HEURE;
-        FIN_VISITE_MATIN = 12 * NB_SECONDES_HEURE;
-        DEBUT_VISITE_APRES_MIDI = 14 * NB_SECONDES_HEURE;
-        FIN_VISITE_APRES_MIDI = 16 * NB_SECONDES_HEURE;
-        PREMIER_DIMANCHE_MOIS_11 = 6;
-        NB_JOURS_SEMAINE = 7;
+        dureeFonctionnementTheorique = (5 + 3 * 6 + 3) * 4 * 60 * 60;
 
-        donnees = new byte[NB_SECONDES_MOIS_11];
-
-        tl = new TimeLine();
-
-        tl.setTempsFonctionnementTheorique(DUREE_FONCTIONNEMENT_THEORIQUE);
+        tl.setTempsFonctionnementTheorique(dureeFonctionnementTheorique);
     }
 
     private void construireHeuresVisite() {
-        for (int numJourDuMois = 1; numJourDuMois <= NB_JOURS_MOIS_11; numJourDuMois++) {
+        for (int numJourDuMois = 1; numJourDuMois <= nbJoursMois; numJourDuMois++) {
 
             // Pour savoir si un numero de jour donne est un dimanche,
             // on ramene ce numero en base 7 (nb jours de la semaine) via modulo
@@ -155,25 +195,27 @@ public final class TimeLineBuilder {
             // car 6 => numero du premier dimanche de novembre 2011
 
             // Pas de visite le dimanche
-            if (numJourDuMois % NB_JOURS_SEMAINE != PREMIER_DIMANCHE_MOIS_11) {
+            if (numJourDuMois % NB_JOURS_SEMAINE != premierDimancheDuMois) {
                 remplirHeuresDeVisiteUneJournee(numJourDuMois);
             }
-
         }
     }
 
     private void remplirHeuresDeVisiteUneJournee(int numJournee) {
 
-        // -1 car le num du jour commence a 1 et non pas 0
+        // -1 car le num du jour commence a 1 et dans notre tableau de "donnees"
+        // tout est indexe depuis 0
         int offset = (numJournee - 1) * NB_SECONDES_JOURNEE;
 
-        // On indique les heures d'ouverture du matin pour cette journee
-        Arrays.fill(donnees, offset + DEBUT_VISITE_MATIN, offset
-                + FIN_VISITE_MATIN, ETAT_OUVERT_AUX_VISITES);
+        // On indique les heures de visite des endants pour cette journee
+        for (int[] visite : visitesEnfants) {
 
-        // Meme chose pour l'apres-midi
-        Arrays.fill(donnees, offset + DEBUT_VISITE_APRES_MIDI, offset
-                + FIN_VISITE_APRES_MIDI, ETAT_OUVERT_AUX_VISITES);
+            int debutVisite = visite[0] * NB_SECONDES_HEURE + visite[1];
+            int finVisite = visite[2] * NB_SECONDES_HEURE + visite[3];
+
+            Arrays.fill(donnees, offset + debutVisite, offset + finVisite,
+                    ETAT_OUVERT_AUX_VISITES);
+        }
     }
 
     private void calculerToutesLesDonnees() {
@@ -182,15 +224,18 @@ public final class TimeLineBuilder {
         int i;
         int tempsAuMoinsUnChocolat = 0;
 
-        for (i = 0; i < NB_SECONDES_MOIS_11; i++) {
+        // On parcourt tout le tableau
+        for (i = 0; i < nbSecondesMois; i++) {
 
             byte donnee = donnees[i];
 
+            // On ne retient que les donnees qui sont ouvertes aux visites
             if (contient(donnee, ETAT_OUVERT_AUX_VISITES)) {
 
                 boolean auMoinsUnChocolatIndisponible = false;
 
-                // Extraction des differents chocolats
+                // On cherche quel chocolat est présent dans une donnee
+                // Pour rappel, une donnee == 1 seconde
                 for (int j = 0; j < ETATS_CHOCOLAT.length; j++) {
 
                     byte etatChocolatEnCours = ETATS_CHOCOLAT[j];
@@ -207,7 +252,6 @@ public final class TimeLineBuilder {
 
             }
             // else : rien : pas ouvert aux enfants ou machine pas indisponible
-
         }
 
         tl
@@ -216,25 +260,24 @@ public final class TimeLineBuilder {
         tl.setTempsRuptureChocolatLait(tempsChaqueChocolat[ETAT_CHOCOLAT_LAIT]);
         tl.setTempsIndisponibiliteGlobale(tempsAuMoinsUnChocolat);
 
-        double qos = (double) (DUREE_FONCTIONNEMENT_THEORIQUE - tempsAuMoinsUnChocolat)
-                / DUREE_FONCTIONNEMENT_THEORIQUE;
+        double qos = (double) (dureeFonctionnementTheorique - tempsAuMoinsUnChocolat)
+                / dureeFonctionnementTheorique;
 
         tl.setQos(qos);
     }
 
-    private void stockerIndisponibiliteChocolat(byte type, int deltaDebut,
-            int deltaFin) {
+    private void stockerIndisponibiliteChocolatPourUnIntervalle(byte type,
+            int deltaDebut, int deltaFin) {
 
         byte etatChocolat = Chocolat.fromType(type);
         byte aAjouter = etatChocolat;
 
-        int i;
-        for (i = deltaDebut; i < deltaFin; i++) {
+        for (int i = deltaDebut; i < deltaFin; i++) {
 
             byte donnee = donnees[i];
 
             // Ici on "ajoute" la donnee si elle n'y est pas, ne fait rien si
-            // elle y est deja (gere par le |).
+            // elle y est deja (geree par le |).
             donnee |= aAjouter;
 
             donnees[i] = donnee;

@@ -15,14 +15,14 @@ import java.nio.channels.FileChannel;
  */
 public class QoSChecker {
 
-    private static int NUM_MOIS_NOVEMBRE = 11;
-
     /**
      * Inclus le caractere de fin de ligne windows (\r\n)
      */
     private static int NB_BYTES_PAR_LIGNE_NORMALE = 43;
 
     private static int NB_BYTES_PAR_LIGNE_NORMALE_SS_FIN_LIGNE = NB_BYTES_PAR_LIGNE_NORMALE - 2;
+
+    private int mois;
 
     /**
      * Constructeur.
@@ -31,14 +31,14 @@ public class QoSChecker {
         // Rien
     }
 
-    public TimeLine extractQoS(File qualityFile) {
+    public TimeLine extractQoS(File qualityFile, int annee, int mois) {
+        this.mois = mois;
         TimeLineBuilder builder = new TimeLineBuilder();
 
-        builder.forMonth(NUM_MOIS_NOVEMBRE);
+        builder.forYear(annee);
+        builder.forMonth(mois);
 
         // Ajout des visites d'enfants
-        // Pour le moment, ne fait rien (donnees en "dur" dans le buidler), mais
-        // c'est pour l'exemple d'usage de l'API.
         builder.withVisiteEnfant(10, 00, 12, 00);
         builder.withVisiteEnfant(14, 00, 16, 00);
 
@@ -92,8 +92,7 @@ public class QoSChecker {
                 int moisDebut = toInt(buf, 3, 4);
                 int moisFin = toInt(buf, 23, 24);
 
-                if (moisDebut == NUM_MOIS_NOVEMBRE
-                        && moisFin == NUM_MOIS_NOVEMBRE) {
+                if (moisDebut == mois && moisFin == mois) {
 
                     int deltaDebut = getDeltaDebut(buf);
                     int deltaFin = getDeltaFin(buf);
@@ -112,8 +111,7 @@ public class QoSChecker {
                     // de debut)
                     // Ignoree donc
 
-                } else if (moisDebut == NUM_MOIS_NOVEMBRE
-                        || moisFin == NUM_MOIS_NOVEMBRE) {
+                } else if (moisDebut == mois || moisFin == mois) {
                     // Ligne sur 2 mois.
                     // On saute ? La spec ne dit rien sur le sujet.
                 } else {
