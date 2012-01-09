@@ -17,8 +17,8 @@ import java.util.List;
 /**
  * Le constructeur de {@link TimeLine}.
  * <p>
- * Le builder stocke un gros tableau (<code>donnees</code>), dont chaque cellule
- * represente 1 seconde du mois dont on veut analyser la QoS.
+ * Le builder stocke un gros tableau (<code>donnees</code>), dont chaque
+ * cellule represente 1 seconde du mois dont on veut analyser la QoS.
  * </p>
  * <p>
  * Chaque cellule (1 sconde donc) contient plusieurs informations, stockee sous
@@ -136,7 +136,7 @@ public final class TimeLineBuilder {
 
         donnees = new byte[nbSecondesMois];
 
-        construireHeuresVisiteCalculerEtDureeFonctionnementTheorique();
+        construireHeuresVisiteEtCalculerDureeFonctionnementTheorique();
     }
 
     /**
@@ -185,7 +185,7 @@ public final class TimeLineBuilder {
         return premierDimancheDuMois;
     }
 
-    private void construireHeuresVisiteCalculerEtDureeFonctionnementTheorique() {
+    private void construireHeuresVisiteEtCalculerDureeFonctionnementTheorique() {
         for (int numJourDuMois = 1; numJourDuMois <= nbJoursMois; numJourDuMois++) {
 
             // Pour savoir si un numero de jour donne est un dimanche,
@@ -198,8 +198,11 @@ public final class TimeLineBuilder {
 
             // Pas de visite le dimanche
             if (numJourDuMois % NB_JOURS_SEMAINE != premierDimancheDuMois) {
+
+                // On remplit le tableau des secondes
                 int dureeTotaleVisiteUneJournee = remplirHeuresDeVisiteUneJournee(numJourDuMois);
 
+                // Et on ajoute le nombre de secondes de visite au total
                 dureeFonctionnementTheorique += dureeTotaleVisiteUneJournee;
             }
         }
@@ -265,7 +268,8 @@ public final class TimeLineBuilder {
             // else : rien : pas ouvert aux enfants ou machine pas indisponible
         }
 
-        tl.setTempsRuptureChocolatBlanc(tempsChaqueChocolat[ETAT_CHOCOLAT_BLANC]);
+        tl
+                .setTempsRuptureChocolatBlanc(tempsChaqueChocolat[ETAT_CHOCOLAT_BLANC]);
         tl.setTempsRuptureChocolatNoir(tempsChaqueChocolat[ETAT_CHOCOLAT_NOIR]);
         tl.setTempsRuptureChocolatLait(tempsChaqueChocolat[ETAT_CHOCOLAT_LAIT]);
         tl.setTempsIndisponibiliteGlobale(tempsAuMoinsUnChocolat);
