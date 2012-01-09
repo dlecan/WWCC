@@ -10,6 +10,13 @@ import java.nio.channels.FileChannel;
 
 /**
  * Classe principale.
+ * <p>
+ * Ne fonctionne qu'avec des fichiers avec des retours ligne "Windows"
+ * <code>\r\n</code>.
+ * </p>
+ * <p>
+ * A faire donc pour le retour ligne Unix (<code>\n</code> uniquement).
+ * </p>
  * 
  * @author dlecan
  */
@@ -126,17 +133,26 @@ public class QoSChecker {
                 try {
                     fileInputStream.close();
                 } catch (IOException e) {
+                    // Rien
                 }
             }
             if (channel != null) {
                 try {
                     channel.close();
                 } catch (IOException e) {
+//                  Rien
                 }
             }
         }
     }
 
+    /**
+     * Calcul du delta de fin d'intervalle depuis le 1er jour du mois.
+     * 
+     * @param buf
+     *            Buffer de données.
+     * @return Delta en secondes.
+     */
     private int getDeltaFin(final byte[] buf) {
         int jourFin = toInt(buf, 20, 21);
         int heureFin = toInt(buf, 31, 32);
@@ -146,6 +162,13 @@ public class QoSChecker {
         return Utils.getDelta(jourFin, heureFin, minutesFin, secondesFin);
     }
 
+    /**
+     * Calcul du delta de debut d'intervalle depuis le 1er jour du mois.
+     * 
+     * @param buf
+     *            Buffer de données.
+     * @return Delta en secondes.
+     */
     private int getDeltaDebut(final byte[] buf) {
         int jourDebut = toInt(buf, 0, 1);
         int heureDebut = toInt(buf, 11, 12);
