@@ -22,7 +22,7 @@ public final class Utils {
 
     /**
      * Calcul le delta en secondes entre la date passee en parametre et le 1er
-     * novembre 2011.
+     * jour du mois.
      * 
      * @param jour
      *            Numero du jour dans le mois.
@@ -32,7 +32,7 @@ public final class Utils {
      *            Minutes
      * @param secondes
      *            Secondes
-     * @return Delta calcule, en secondes depuis le 01/11.
+     * @return Delta calcule, en secondes depuis le 1er jour du mois.
      */
     public static int getDelta(int jour, int heure, int minutes, int secondes) {
 
