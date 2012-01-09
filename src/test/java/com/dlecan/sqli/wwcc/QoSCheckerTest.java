@@ -33,7 +33,9 @@ public class QoSCheckerTest {
 
     @Test
     public void test_wonka_data_2011_v3() throws Exception {
-        runTest("wonka_data_2011_v3", null);
+        Object[] resultats = new Object[] { 374400, 20662, 39080, 20485, 74880 };
+        
+        runTest("wonka_data_2011_v3", resultats);
     }
 
     @Test
